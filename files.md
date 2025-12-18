@@ -38,11 +38,12 @@ A brief description of each file in the codebase.
 
 | File                   | Description                                                |
 | ---------------------- | ---------------------------------------------------------- |
-| `Layout.tsx`           | Page wrapper with theme toggle container                   |
+| `Layout.tsx`           | Page wrapper with search button and theme toggle           |
 | `ThemeToggle.tsx`      | Theme switcher (dark/light/tan/cloud)                      |
 | `PostList.tsx`         | Year-grouped blog post list                                |
 | `BlogPost.tsx`         | Markdown renderer with syntax highlighting                 |
-| `CopyPageDropdown.tsx` | Share dropdown for LLMs (ChatGPT, Claude, Cursor, VS Code) |
+| `CopyPageDropdown.tsx` | Share dropdown for LLMs (ChatGPT, Claude)                  |
+| `SearchModal.tsx`      | Full text search modal with keyboard navigation            |
 
 ### Context (`src/context/`)
 
@@ -69,6 +70,7 @@ A brief description of each file in the codebase.
 | `schema.ts`        | Database schema (posts, pages, viewCounts, pageViews, activeSessions) |
 | `posts.ts`         | Queries and mutations for blog posts, view counts             |
 | `pages.ts`         | Queries and mutations for static pages                        |
+| `search.ts`        | Full text search queries across posts and pages               |
 | `stats.ts`         | Real-time stats queries, page view recording, session heartbeat |
 | `crons.ts`         | Cron job for stale session cleanup                            |
 | `http.ts`          | HTTP endpoints: sitemap, API, Open Graph metadata             |

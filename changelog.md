@@ -4,7 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
-## [1.2.0] - 2025-12-14
+## [1.3.0] - 2025-12-17
+
+### Added
+
+- Real-time search with Command+K keyboard shortcut
+  - Search icon in top nav using Phosphor Icons
+  - Modal with keyboard navigation (arrow keys, Enter, Escape)
+  - Full text search across posts and pages using Convex search indexes
+  - Result snippets with context around search matches
+  - Distinguishes between posts and pages with type badges
+- Search indexes for pages table (title and content)
+- New `@phosphor-icons/react` dependency for search icon
+
+### Technical
+
+- Uses Convex full text search with reactive queries
+- Deduplicates results from title and content searches
+- Sorts results with title matches first
+- Mobile responsive modal design
+- All four themes supported (dark, light, tan, cloud)
+
+## [1.2.0] - 2025-12-15
 
 ### Added
 

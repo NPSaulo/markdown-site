@@ -37,7 +37,15 @@ export default defineSchema({
     lastSyncedAt: v.number(),
   })
     .index("by_slug", ["slug"])
-    .index("by_published", ["published"]),
+    .index("by_published", ["published"])
+    .searchIndex("search_content", {
+      searchField: "content",
+      filterFields: ["published"],
+    })
+    .searchIndex("search_title", {
+      searchField: "title",
+      filterFields: ["published"],
+    }),
 
   // View counts for analytics
   viewCounts: defineTable({

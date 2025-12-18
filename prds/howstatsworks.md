@@ -85,17 +85,62 @@ useEffect(() => {
 
 Sends a ping every 30 seconds while the page is open. This powers the "Active Now" count.
 
+Uses refs to prevent duplicate calls and avoid write conflicts:
+
 ```typescript
 const HEARTBEAT_INTERVAL_MS = 30 * 1000;
+const HEARTBEAT_DEBOUNCE_MS = 5 * 1000;
+
+// Track heartbeat state to prevent duplicate calls
+const isHeartbeatPending = useRef(false);
+const lastHeartbeatTime = useRef(0);
+const lastHeartbeatPath = useRef<string | null>(null);
+
+const sendHeartbeat = useCallback(
+  async (path: string) => {
+    const sessionId = sessionIdRef.current;
+    if (!sessionId) return;
+
+    const now = Date.now();
+
+    // Skip if heartbeat is already pending
+    if (isHeartbeatPending.current) {
+      return;
+    }
+
+    // Skip if same path and sent recently (debounce)
+    if (
+      lastHeartbeatPath.current === path &&
+      now - lastHeartbeatTime.current < HEARTBEAT_DEBOUNCE_MS
+    ) {
+      return;
+    }
+
+    isHeartbeatPending.current = true;
+    lastHeartbeatTime.current = now;
+    lastHeartbeatPath.current = path;
+
+    try {
+      await heartbeatMutation({ sessionId, currentPath: path });
+    } catch {
+      // Silently fail
+    } finally {
+      isHeartbeatPending.current = false;
+    }
+  },
+  [heartbeatMutation],
+);
 
 useEffect(() => {
-  const sendHeartbeat = () => {
-    heartbeat({ sessionId, currentPath: path });
-  };
-  sendHeartbeat();
-  const intervalId = setInterval(sendHeartbeat, HEARTBEAT_INTERVAL_MS);
+  const path = location.pathname;
+  sendHeartbeat(path);
+
+  const intervalId = setInterval(() => {
+    sendHeartbeat(path);
+  }, HEARTBEAT_INTERVAL_MS);
+
   return () => clearInterval(intervalId);
-}, [location.pathname, heartbeat]);
+}, [location.pathname, sendHeartbeat]);
 ```
 
 ## Backend mutations
@@ -143,9 +188,11 @@ export const recordPageView = mutation({
 
 ### heartbeat
 
-Creates or updates a session record. Uses indexed lookup for upsert.
+Creates or updates a session record. Uses indexed lookup for upsert with a 10-second dedup window to prevent write conflicts.
 
 ```typescript
+const HEARTBEAT_DEDUP_MS = 10 * 1000;
+
 export const heartbeat = mutation({
   args: {
     sessionId: v.string(),
@@ -153,23 +200,34 @@ export const heartbeat = mutation({
   },
   returns: v.null(),
   handler: async (ctx, args) => {
+    const now = Date.now();
+
     const existingSession = await ctx.db
       .query("activeSessions")
       .withIndex("by_sessionId", (q) => q.eq("sessionId", args.sessionId))
       .first();
 
     if (existingSession) {
+      // Early return if same path and recently updated (idempotent)
+      if (
+        existingSession.currentPath === args.currentPath &&
+        now - existingSession.lastSeen < HEARTBEAT_DEDUP_MS
+      ) {
+        return null;
+      }
+
       await ctx.db.patch(existingSession._id, {
         currentPath: args.currentPath,
-        lastSeen: Date.now(),
+        lastSeen: now,
       });
-    } else {
-      await ctx.db.insert("activeSessions", {
-        sessionId: args.sessionId,
-        currentPath: args.currentPath,
-        lastSeen: Date.now(),
-      });
+      return null;
     }
+
+    await ctx.db.insert("activeSessions", {
+      sessionId: args.sessionId,
+      currentPath: args.currentPath,
+      lastSeen: now,
+    });
 
     return null;
   },
@@ -261,11 +319,13 @@ No manual configuration required. Sync content, and stats track it.
 
 ## Configuration constants
 
-| Constant | Value | Location |
-|----------|-------|----------|
-| DEDUP_WINDOW_MS | 30 minutes | convex/stats.ts |
-| SESSION_TIMEOUT_MS | 2 minutes | convex/stats.ts |
-| HEARTBEAT_INTERVAL_MS | 30 seconds | src/hooks/usePageTracking.ts |
+| Constant | Value | Location | Purpose |
+|----------|-------|----------|---------|
+| DEDUP_WINDOW_MS | 30 minutes | convex/stats.ts | Page view deduplication |
+| SESSION_TIMEOUT_MS | 2 minutes | convex/stats.ts | Active session expiry |
+| HEARTBEAT_DEDUP_MS | 10 seconds | convex/stats.ts | Backend idempotency window |
+| HEARTBEAT_INTERVAL_MS | 30 seconds | src/hooks/usePageTracking.ts | Client heartbeat frequency |
+| HEARTBEAT_DEBOUNCE_MS | 5 seconds | src/hooks/usePageTracking.ts | Frontend debounce window |
 
 ## Files involved
 
@@ -277,8 +337,25 @@ No manual configuration required. Sync content, and stats track it.
 | `src/hooks/usePageTracking.ts` | Client-side tracking hook |
 | `src/pages/Stats.tsx` | Stats page UI |
 
+## Write conflict prevention
+
+The stats system uses several patterns to avoid write conflicts in the `activeSessions` table:
+
+**Backend (convex/stats.ts):**
+- 10-second dedup window: skips updates if session was recently updated with same path
+- Indexed queries: uses `by_sessionId` index for efficient lookups
+- Early returns: mutation is idempotent and safe to call multiple times
+
+**Frontend (src/hooks/usePageTracking.ts):**
+- 5-second debounce: prevents rapid duplicate calls from the same tab
+- Pending state ref: blocks overlapping async calls
+- Path tracking ref: skips redundant heartbeats for same path
+
+See `prds/howtoavoidwriteconflicts.md` for the full implementation details.
+
 ## Related documentation
 
 - [Convex event records pattern](https://docs.convex.dev/understanding/best-practices/)
 - [Preventing write conflicts](https://docs.convex.dev/error#1)
+- [Optimistic concurrency control](https://docs.convex.dev/database/advanced/occ)
 

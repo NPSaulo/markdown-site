@@ -12,6 +12,7 @@ A minimalist markdown site built with React, Convex, and Vite. Optimized for SEO
 - Real-time data with Convex
 - Fully responsive design
 - Real-time analytics at `/stats`
+- Full text search with Command+K shortcut
 
 ### SEO and Discovery
 
@@ -263,7 +264,22 @@ markdown-site/
 - react-syntax-highlighter
 - date-fns
 - lucide-react
+- @phosphor-icons/react
 - Netlify
+
+## Search
+
+Press `Command+K` (Mac) or `Ctrl+K` (Windows/Linux) to open the search modal. The search uses Convex full text search to find posts and pages by title and content.
+
+Features:
+
+- Real-time results as you type
+- Keyboard navigation (arrow keys, Enter, Escape)
+- Result snippets with context around matches
+- Distinguishes between posts and pages
+- Works with all four themes
+
+The search icon appears in the top navigation bar next to the theme toggle.
 
 ## Real-time Stats
 

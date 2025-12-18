@@ -2,7 +2,7 @@
 
 ## Current Status
 
-v1.2.0 ready for deployment. Build passes. TypeScript verified.
+v1.3.0 ready for deployment. Build passes. TypeScript verified.
 
 ## Completed
 
@@ -33,6 +33,9 @@ v1.2.0 ready for deployment. Build passes. TypeScript verified.
 - [x] Active session heartbeat system
 - [x] Cron job for stale session cleanup
 - [x] Stats link in homepage footer
+- [x] Real-time search with Command+K shortcut
+- [x] Search modal with keyboard navigation
+- [x] Full text search indexes for posts and pages
 
 ## Deployment Steps
 
@@ -43,7 +46,6 @@ v1.2.0 ready for deployment. Build passes. TypeScript verified.
 
 ## Future Enhancements
 
-- [ ] Search functionality
 - [ ] Related posts suggestions
 - [ ] Newsletter signup
 - [ ] Comments system
