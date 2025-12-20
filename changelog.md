@@ -4,6 +4,28 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.11.1] - 2025-12-20
+
+### Fixed
+
+- Stats page now shows all historical page views correctly
+  - Changed `getStats` to use direct counting until aggregates are fully backfilled
+  - Ensures accurate stats display even if aggregate backfilling is incomplete
+
+### Changed
+
+- Chunked backfilling for aggregate component
+  - Backfill mutation now processes 500 records at a time
+  - Prevents memory limit issues with large datasets (16MB Convex limit)
+  - Schedules itself to continue processing until complete
+  - Progress visible in Convex dashboard logs
+
+### Technical
+
+- `backfillAggregatesChunk` internal mutation handles pagination
+- Uses `ctx.scheduler.runAfter` to chain batch processing
+- Tracks seen session IDs across chunks for unique visitor counting
+
 ## [1.11.0] - 2025-12-20
 
 ### Added

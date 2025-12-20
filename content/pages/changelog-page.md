@@ -7,6 +7,18 @@ order: 5
 
 All notable changes to this project.
 
+## v1.11.1
+
+Released December 20, 2025
+
+**Fix historical stats display and chunked backfilling**
+
+- Stats page now shows all historical page views correctly
+- Changed `getStats` to use direct counting until aggregates are fully backfilled
+- Backfill mutation now processes 500 records at a time (chunked)
+- Prevents memory limit issues with large datasets (16MB Convex limit)
+- Schedules itself to continue processing until complete
+
 ## v1.11.0
 
 Released December 20, 2025

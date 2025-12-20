@@ -97,13 +97,24 @@ const uniqueVisitors = new TableAggregate<{
 
 ### Backfill existing data
 
-After deploying the aggregate component, run the backfill mutation once to populate counts from existing page views:
+After deploying the aggregate component, run the backfill mutation to populate counts from existing page views:
 
 ```bash
 npx convex run stats:backfillAggregates
 ```
 
+**Chunked backfilling:** The backfill process handles large datasets by processing records in batches of 500. This prevents memory limit issues (Convex has a 16MB limit per function execution). The mutation schedules itself to continue processing until all records are backfilled.
+
+How it works:
+1. `backfillAggregates` starts the process and schedules the first chunk
+2. `backfillAggregatesChunk` processes 500 records at a time using pagination
+3. If more records exist, it schedules itself to continue with the next batch
+4. Progress is logged (check Convex dashboard logs)
+5. Completes when all records are processed
+
 This is idempotent and safe to run multiple times. It uses `insertIfDoesNotExist` to avoid duplicates.
+
+**Fallback behavior:** While aggregates are being backfilled (or if backfilling hasn't run yet), the `getStats` query uses direct counting from the `pageViews` table to ensure accurate stats are always displayed. This is slightly slower but guarantees correct numbers.
 
 ## Data flow
 
