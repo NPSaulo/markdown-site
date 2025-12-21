@@ -25,7 +25,7 @@
   --font-size-xs: 12px;
   --font-size-sm: 13px;
   --font-size-md: 14px;
-  --font-size-base: 16px;
+  --font-size-base: 18px;
   --font-size-lg: 17px;
   --font-size-xl: 18px;
   --font-size-2xl: 20px;
@@ -76,7 +76,7 @@
   /* Footer and tags font sizes */
   --font-size-post-tag: var(--font-size-sm);
   --font-size-share-button: var(--font-size-md);
-  --font-size-footer-text: 1rem;
+  --font-size-footer-text: 18px;
 
   /* Blog page font sizes */
   --font-size-blog-page-title: 2rem;
@@ -133,13 +133,13 @@
     /* Homepage mobile */
     --font-size-home-name: var(--font-size-4xl);
     --font-size-nav-link: var(--font-size-sm);
-    
+
     /* Post list mobile */
     --font-size-post-list-title: var(--font-size-xl);
-    
+
     /* Post page mobile */
     --font-size-post-title: var(--font-size-4xl);
-    
+
     /* Blog content mobile */
     --font-size-blog-content: var(--font-size-base);
     --font-size-blog-h1: 22px;
@@ -147,22 +147,22 @@
     --font-size-blog-h3: var(--font-size-base);
     --font-size-blog-h4: 15px;
     --font-size-blog-h5: var(--font-size-sm);
-    
+
     /* Table mobile */
     --font-size-table: var(--font-size-sm);
-    
+
     /* Blog page mobile */
     --font-size-blog-page-title: 1.75rem;
-    
+
     /* Stats mobile */
     --font-size-stats-title: var(--font-size-4xl);
     --font-size-stat-card-value: var(--font-size-4xl);
-    
+
     /* Search modal mobile */
     --font-size-search-result-title: var(--font-size-md);
     --font-size-search-result-snippet: var(--font-size-xs);
     --font-size-search-result-type: var(--font-size-3xs);
-    
+
     /* Featured cards mobile */
     --font-size-featured-card-title: 15px;
     --font-size-featured-card-excerpt: var(--font-size-sm);
@@ -2981,7 +2981,8 @@ body {
   flex: 1;
   width: 100%;
   padding: 1.5rem;
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   font-size: 14px;
   line-height: 1.7;
   background: transparent;
@@ -3021,7 +3022,8 @@ body {
   display: flex;
   align-items: center;
   gap: 0.625rem;
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
 }
 
 .write-stats-divider {
@@ -3039,7 +3041,8 @@ body {
 }
 
 .write-save-hint code {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   font-size: 11px;
   background: var(--bg-secondary);
   padding: 0.125rem 0.375rem;
@@ -3107,7 +3110,8 @@ body {
 }
 
 .write-field-name {
-  font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
   font-size: 12px;
   color: var(--text-primary);
   font-weight: 500;
