@@ -291,18 +291,19 @@ export default function CopyPageDropdown(props: CopyPageDropdownProps) {
 
   // Generic handler for opening AI services
   // All services receive the full markdown content directly
+  // IMPORTANT: window.open must happen BEFORE any await to avoid popup blockers
   const handleOpenInAI = async (service: AIService) => {
     const markdown = formatAsMarkdown(props);
     const prompt = `Please analyze this article:\n\n${markdown}`;
     
     // Build the target URL using the service's buildUrl function
     if (!service.buildUrl) {
-      // Fallback: copy to clipboard and open base URL
+      // Fallback: open base URL FIRST (sync), then copy to clipboard
+      window.open(service.baseUrl, "_blank");
       const success = await writeToClipboard(markdown);
       if (success) {
         setFeedback("url-too-long");
         setFeedbackMessage("Copied! Paste in " + service.name);
-        window.open(service.baseUrl, "_blank");
       } else {
         setFeedback("error");
         setFeedbackMessage("Failed to copy content");
@@ -313,13 +314,14 @@ export default function CopyPageDropdown(props: CopyPageDropdownProps) {
     
     const targetUrl = service.buildUrl(prompt);
     
-    // Check URL length - if too long, copy to clipboard instead
+    // Check URL length - if too long, open base URL then copy to clipboard
     if (isUrlTooLong(targetUrl)) {
+      // Open window FIRST (must be sync to avoid popup blocker)
+      window.open(service.baseUrl, "_blank");
       const success = await writeToClipboard(markdown);
       if (success) {
         setFeedback("url-too-long");
         setFeedbackMessage("Copied! Paste in " + service.name);
-        window.open(service.baseUrl, "_blank");
       } else {
         setFeedback("error");
         setFeedbackMessage("Failed to copy content");
