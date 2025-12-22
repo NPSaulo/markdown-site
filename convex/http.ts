@@ -6,7 +6,7 @@ import { rssFeed, rssFullFeed } from "./rss";
 const http = httpRouter();
 
 // Site configuration
-const SITE_URL = process.env.SITE_URL || "https://markdowncms.netlify.app";
+const SITE_URL = process.env.SITE_URL || "https://markdown.fast";
 const SITE_NAME = "markdown sync framework";
 
 // RSS feed endpoint (descriptions only)
@@ -72,7 +72,8 @@ http.route({
     const response = {
       site: SITE_NAME,
       url: SITE_URL,
-      description: "An open-source publishing framework for AI agents and developers. Write markdown, sync from the terminal. Your content is instantly available to browsers, LLMs, and AI agents. Built on Convex and Netlify.",
+      description:
+        "An open-source publishing framework for AI agents and developers. Write markdown, sync from the terminal. Your content is instantly available to browsers, LLMs, and AI agents. Built on Convex and Netlify.",
       posts: posts.map((post) => ({
         title: post.title,
         slug: post.slug,
@@ -194,7 +195,8 @@ http.route({
     const response = {
       site: SITE_NAME,
       url: SITE_URL,
-      description: "An open-source publishing framework for AI agents and developers. Write markdown, sync from the terminal. Your content is instantly available to browsers, LLMs, and AI agents. Built on Convex and Netlify.",
+      description:
+        "An open-source publishing framework for AI agents and developers. Write markdown, sync from the terminal. Your content is instantly available to browsers, LLMs, and AI agents. Built on Convex and Netlify.",
       exportedAt: new Date().toISOString(),
       totalPosts: fullPosts.length,
       posts: fullPosts,
@@ -230,7 +232,7 @@ function generateMetaHtml(content: {
   image?: string;
   type?: "post" | "page";
 }): string {
-  const siteUrl = process.env.SITE_URL || "https://markdowncms.netlify.app";
+  const siteUrl = process.env.SITE_URL || "https://markdown.fast";
   const siteName = "markdown sync framework";
   const defaultImage = `${siteUrl}/images/og-default.svg`;
   const canonicalUrl = `${siteUrl}/${content.slug}`;
@@ -266,8 +268,12 @@ function generateMetaHtml(content: {
   <meta property="og:image" content="${ogImage}">
   <meta property="og:url" content="${canonicalUrl}">
   <meta property="og:type" content="${ogType}">
-  <meta property="og:site_name" content="${siteName}">${content.date ? `
-  <meta property="article:published_time" content="${content.date}">` : ""}
+  <meta property="og:site_name" content="${siteName}">${
+    content.date
+      ? `
+  <meta property="article:published_time" content="${content.date}">`
+      : ""
+  }
   
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
@@ -284,8 +290,12 @@ function generateMetaHtml(content: {
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 680px; margin: 50px auto; padding: 20px; color: #111;">
   <h1 style="font-size: 32px; margin-bottom: 16px;">${safeTitle}</h1>
-  <p style="color: #666; margin-bottom: 24px;">${safeDescription}</p>${content.date ? `
-  <p style="font-size: 14px; color: #999;">${content.date}${content.readTime ? ` · ${content.readTime}` : ""}</p>` : ""}
+  <p style="color: #666; margin-bottom: 24px;">${safeDescription}</p>${
+    content.date
+      ? `
+  <p style="font-size: 14px; color: #999;">${content.date}${content.readTime ? ` · ${content.readTime}` : ""}</p>`
+      : ""
+  }
   <p style="margin-top: 24px;"><small>Redirecting to full ${contentType}...</small></p>
 </body>
 </html>`;

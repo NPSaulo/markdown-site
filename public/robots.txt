@@ -5,7 +5,7 @@ User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://markdowncms.netlify.app/sitemap.xml
+Sitemap: https://markdown.fast/sitemap.xml
 
 # AI and LLM crawlers
 User-agent: GPTBot

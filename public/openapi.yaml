@@ -9,7 +9,7 @@ info:
     url: https://github.com/waynesutton/markdown-site
 
 servers:
-  - url: https://markdowncms.netlify.app
+  - url: https://markdown.fast
     description: Production server
 
 paths:
@@ -31,7 +31,7 @@ paths:
                     example: markdown sync framework
                   url:
                     type: string
-                    example: https://markdowncms.netlify.app
+                    example: https://markdown.fast
                   posts:
                     type: array
                     items:
@@ -164,10 +164,10 @@ components:
           example: [tutorial, markdown]
         url:
           type: string
-          example: https://markdowncms.netlify.app/how-to-build-blog
+          example: https://markdown.fast/how-to-build-blog
         markdownUrl:
           type: string
-          example: https://markdowncms.netlify.app/api/post?slug=how-to-build-blog
+          example: https://markdown.fast/api/post?slug=how-to-build-blog
 
     Post:
       type: object

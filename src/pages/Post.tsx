@@ -8,7 +8,7 @@ import { ArrowLeft, Link as LinkIcon, Twitter, Rss } from "lucide-react";
 import { useState, useEffect } from "react";
 
 // Site configuration
-const SITE_URL = "https://markdowncms.netlify.app";
+const SITE_URL = "https://markdown.fast";
 const SITE_NAME = "markdown sync framework";
 const DEFAULT_OG_IMAGE = "/images/og-default.svg";
 
@@ -25,7 +25,7 @@ export default function Post() {
   useEffect(() => {
     if (!location.hash) return;
     if (page === undefined && post === undefined) return;
-    
+
     // Small delay to ensure content is rendered
     const timer = setTimeout(() => {
       const id = location.hash.slice(1);
@@ -34,7 +34,7 @@ export default function Post() {
         element.scrollIntoView({ behavior: "smooth" });
       }
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, [location.hash, page, post]);
 

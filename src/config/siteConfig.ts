@@ -107,15 +107,15 @@ export const siteConfig: SiteConfig = {
       },
       {
         src: "/images/logos/markdown.svg",
-        href: "https://markdowncms.netlify.app/docs",
+        href: "https://markdown.fast/docs",
       },
       {
         src: "/images/logos/react.svg",
-        href: "https://markdowncms.netlify.app/setup-guide",
+        href: "https://markdown.fast/setup-guide",
       },
       {
         src: "/images/logos/sample-logo-5.svg",
-        href: "https://markdowncms.netlify.app/setup-guide",
+        href: "https://markdown.fast/setup-guide",
       },
     ],
     position: "above-footer",
