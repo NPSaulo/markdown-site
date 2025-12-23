@@ -18,9 +18,9 @@ npm run sync:prod   # production
 
 ## Documentation
 
-- **[Setup Guide](content/blog/setup-guide.md)** - Complete fork and deployment guide
-- **[Configuration Guide](content/blog/fork-configuration-guide.md)** - Automated or manual fork setup
-- **[Full Documentation](content/pages/docs.md)** - Docs for all features and configuration
+- **[Setup Guide](https://www.markdown.fast/setup-guide)** - Complete fork and deployment guide
+- **[Configuration Guide](https://www.markdown.fast/fork-configuration-guide)** - Automated or manual fork setup
+- **[Full Documentation](https://www.markdown.fast/docs)** - Docs for all features and configuration
 
 ## Fork Configuration
 
@@ -435,5 +435,3 @@ Fork this project: [github.com/waynesutton/markdown-site](https://github.com/way
 ## License
 
 This project is licensed under the [MIT License](https://github.com/waynesutton/markdown-site/blob/main/LICENSE).
-
-You are free to use, modify, and distribute this project in accordance with the [MIT license terms](https://opensource.org/licenses/MIT).
