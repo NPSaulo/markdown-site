@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.24.5] - 2025-12-23
+
+### Fixed
+
+- AI crawlers (ChatGPT, Perplexity) can now fetch raw markdown from `/raw/*.md` URLs
+  - Added explicit `/raw/*` redirect passthrough in `netlify.toml` before SPA fallback
+  - Expanded `excludedPath` array to cover all static file patterns
+  - Refactored `botMeta.ts` edge function:
+    - Added hard bypass at top of handler for static file paths
+    - Separated social preview bots from AI crawlers
+    - AI crawlers (GPTBot, ClaudeBot, PerplexityBot, etc.) now bypass OG interception
+    - Only social preview bots (Facebook, Twitter, LinkedIn, etc.) receive OG metadata HTML
+
+### Technical
+
+- `netlify.toml`: Added `force = true` to `/raw/*` redirect, expanded `excludedPath` array
+- `botMeta.ts`: Complete refactor with `SOCIAL_PREVIEW_BOTS` and `AI_CRAWLERS` lists, hard path bypass
+
 ## [1.24.4] - 2025-12-23
 
 ### Added

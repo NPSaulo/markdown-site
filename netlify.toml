@@ -5,6 +5,20 @@
 [build.environment]
   NODE_VERSION = "20"
 
+# Raw markdown passthrough - explicit rule prevents SPA fallback from intercepting
+[[redirects]]
+  from = "/raw/*"
+  to = "/raw/:splat"
+  status = 200
+  force = true
+
+# Static files passthrough
+[[redirects]]
+  from = "/assets/*"
+  to = "/assets/:splat"
+  status = 200
+  force = true
+
 # SPA fallback for client-side routing (must be last)
 [[redirects]]
   from = "/*"
@@ -44,11 +58,23 @@
   path = "/api/geo"
   function = "geo"
 
-# Open Graph bot detection (excludes raw markdown directory)
+# Open Graph bot detection for social preview cards only
+# Excludes raw markdown, static assets, and AI-consumable files
 [[edge_functions]]
   path = "/*"
   function = "botMeta"
-  excludedPath = "/raw/*"
+  excludedPath = [
+    "/raw/*",
+    "/assets/*",
+    "/api/*",
+    "/.netlify/*",
+    "/favicon.ico",
+    "/favicon.svg",
+    "/robots.txt",
+    "/sitemap.xml",
+    "/llms.txt",
+    "/openapi.yaml"
+  ]
 
 # Security and SEO headers
 [[headers]]
@@ -60,12 +86,13 @@
     Referrer-Policy = "strict-origin-when-cross-origin"
     Link = "</llms.txt>; rel=\"author\""
 
-# Raw markdown files with proper content-type
+# Raw markdown files - AI friendly headers
 [[headers]]
-  for = "/raw/*.md"
+  for = "/raw/*"
   [headers.values]
     Content-Type = "text/markdown; charset=utf-8"
     Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=3600"
     X-Robots-Tag = "noindex"
 
 [context.production.environment]
@@ -76,4 +103,3 @@
 
 [context.branch-deploy.environment]
   NODE_ENV = "development"
-
