@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.24.6] - 2025-12-23
+
+### Added
+
+- Homepage raw markdown index file (`/raw/index.md`)
+  - Automatically generated during `npm run sync` and `npm run sync:prod`
+  - Lists all published posts sorted by date (newest first)
+  - Lists all published pages sorted by order or alphabetically
+  - Includes post metadata: date, reading time, tags, description
+  - Provides direct links to all raw markdown files
+  - AI crawlers can now access homepage content as markdown
+
+### Technical
+
+- Updated `scripts/sync-posts.ts`: Added `generateHomepageIndex()` function to create `index.md` in `public/raw/`
+
 ## [1.24.5] - 2025-12-23
 
 ### Fixed

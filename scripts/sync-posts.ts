@@ -374,6 +374,77 @@ function generateRawMarkdownFile(
   fs.writeFileSync(filePath, markdown);
 }
 
+// Generate homepage index markdown file listing all posts
+function generateHomepageIndex(
+  posts: ParsedPost[],
+  pages: ParsedPage[]
+): void {
+  const publishedPosts = posts.filter((p) => p.published);
+  const publishedPages = pages.filter((p) => p.published);
+
+  // Sort posts by date (newest first)
+  const sortedPosts = [...publishedPosts].sort((a, b) => {
+    return new Date(b.date).getTime() - new Date(a.date).getTime();
+  });
+
+  // Build markdown content
+  let markdown = `# Homepage\n\n`;
+  markdown += `This is the homepage index of all published content.\n\n`;
+
+  // Add posts section
+  if (sortedPosts.length > 0) {
+    markdown += `## Blog Posts (${sortedPosts.length})\n\n`;
+    for (const post of sortedPosts) {
+      markdown += `- **[${post.title}](/raw/${post.slug}.md)**`;
+      if (post.description) {
+        markdown += ` - ${post.description}`;
+      }
+      markdown += `\n  - Date: ${post.date}`;
+      if (post.readTime) {
+        markdown += ` | Reading time: ${post.readTime}`;
+      }
+      if (post.tags && post.tags.length > 0) {
+        markdown += ` | Tags: ${post.tags.join(", ")}`;
+      }
+      markdown += `\n`;
+    }
+    markdown += `\n`;
+  }
+
+  // Add pages section
+  if (publishedPages.length > 0) {
+    markdown += `## Pages (${publishedPages.length})\n\n`;
+    // Sort pages by order if available, otherwise alphabetically
+    const sortedPages = [...publishedPages].sort((a, b) => {
+      if (a.order !== undefined && b.order !== undefined) {
+        return a.order - b.order;
+      }
+      if (a.order !== undefined) return -1;
+      if (b.order !== undefined) return 1;
+      return a.title.localeCompare(b.title);
+    });
+
+    for (const page of sortedPages) {
+      markdown += `- **[${page.title}](/raw/${page.slug}.md)**`;
+      if (page.excerpt) {
+        markdown += ` - ${page.excerpt}`;
+      }
+      markdown += `\n`;
+    }
+    markdown += `\n`;
+  }
+
+  // Add summary
+  markdown += `---\n\n`;
+  markdown += `**Total Content:** ${sortedPosts.length} posts, ${publishedPages.length} pages\n`;
+  markdown += `\nAll content is available as raw markdown files at \`/raw/{slug}.md\`\n`;
+
+  // Write index.md file
+  const indexPath = path.join(RAW_OUTPUT_DIR, "index.md");
+  fs.writeFileSync(indexPath, markdown);
+  console.log("Generated homepage index: index.md");
+}
+
 // Generate all raw markdown files during sync
 function generateRawMarkdownFiles(
   posts: ParsedPost[],
@@ -421,8 +492,11 @@ function generateRawMarkdownFiles(
     );
   }
 
+  // Generate homepage index markdown file
+  generateHomepageIndex(posts, pages);
+
   console.log(
-    `Generated ${publishedPosts.length} post files and ${publishedPages.length} page files`
+    `Generated ${publishedPosts.length} post files, ${publishedPages.length} page files, and 1 index file`
   );
 }
 
