@@ -1,12 +1,12 @@
+# How to Use the MCP Server with MarkDown.fast
+
+> Guide to using the HTTP-based Model Context Protocol(MCP) server at www.markdown.fast/mcp with Cursor and other AI tools
+
 ---
-title: "How to Use the MCP Server with MarkDown.fast"
-description: "Guide to using the HTTP-based Model Context Protocol(MCP) server at www.markdown.fast/mcp with Cursor and other AI tools"
-date: "2025-12-28"
-slug: "how-to-use-mcp-server"
-image: /images/mcp-blog.png
-published: true
-blogFeatured: true
-tags: ["mcp", "cursor", "ai", "tutorial", "netlify"]
+Type: post
+Date: 2025-12-28
+Reading time: 5 min read
+Tags: mcp, cursor, ai, tutorial, netlify
 ---
 
 This site includes an HTTP-based Model Context Protocol (MCP) server that allows AI tools like Cursor, Claude Desktop, and other MCP-compatible clients to access blog content programmatically.

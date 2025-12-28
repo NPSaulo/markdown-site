@@ -1591,3 +1591,35 @@ After deploying:
 5. Share your first post
 
 Your blog is now live with real-time updates, SEO optimization, and AI-friendly APIs. Every time you sync new posts, they appear immediately without redeploying.
+
+## MCP Server
+
+Your site includes an HTTP-based Model Context Protocol (MCP) server for AI tool integration.
+
+**Endpoint:** `https://your-site.netlify.app/mcp`
+
+The MCP server runs 24/7 on Netlify Edge Functions and allows AI assistants like Cursor and Claude Desktop to access your blog content programmatically. No local machine required.
+
+**Features:**
+
+- Public access with rate limiting (50 req/min per IP)
+- Optional API key for higher limits (1000 req/min)
+- Seven tools: list_posts, get_post, list_pages, get_page, get_homepage, search_content, export_all
+
+**Configuration:**
+
+Add to your Cursor config (`~/.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "my-blog": {
+      "url": "https://your-site.netlify.app/mcp"
+    }
+  }
+}
+```
+
+**For higher rate limits:** Set `MCP_API_KEY` in your Netlify environment variables, then add the Authorization header to your client config.
+
+See [How to Use the MCP Server](/how-to-use-mcp-server) for full documentation.

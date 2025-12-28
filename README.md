@@ -36,6 +36,8 @@ npm run sync        # dev
 npm run sync:prod   # production
 ```
 
+**MCP Server:** The site includes an HTTP-based Model Context Protocol (MCP) server at `/mcp` for AI tool integration. Connect Cursor, Claude Desktop, and other MCP clients to access blog content programmatically. See [How to Use the MCP Server](https://www.markdown.fast/how-to-use-mcp-server) for setup instructions.
+
 ## Documentation
 
 - **[Setup Guide](https://www.markdown.fast/setup-guide)** - Complete fork and deployment guide

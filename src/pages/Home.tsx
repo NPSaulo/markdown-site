@@ -99,7 +99,6 @@ export default function Home() {
         {/* Intro with JSX support for links */}
         <p className="home-intro">
           An open-source publishing framework built for AI agents and developers
-          <br></br>
           to ship websites, docs, or blogs. <br></br>
           <br /> Write markdown, sync from the terminal.{" "}
           <a
@@ -245,9 +244,8 @@ export default function Home() {
       )}
 
       {/* Social footer section */}
-      {siteConfig.socialFooter?.enabled && siteConfig.socialFooter.showOnHomepage && (
-        <SocialFooter />
-      )}
+      {siteConfig.socialFooter?.enabled &&
+        siteConfig.socialFooter.showOnHomepage && <SocialFooter />}
     </div>
   );
 }

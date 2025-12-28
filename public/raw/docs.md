@@ -979,6 +979,49 @@ The `newsletter:send` command calls the `scheduleSendPostNewsletter` mutation di
 | `/openapi.yaml`                | OpenAPI 3.0 specification   |
 | `/llms.txt`                    | AI agent discovery          |
 
+## MCP Server
+
+The site includes an HTTP-based Model Context Protocol (MCP) server for AI tool integration. It allows AI assistants like Cursor and Claude Desktop to access blog content programmatically.
+
+**Endpoint:** `https://www.markdown.fast/mcp`
+
+**Features:**
+
+- 24/7 availability via Netlify Edge Functions
+- Public access with rate limiting (50 req/min per IP)
+- Optional API key for higher limits (1000 req/min)
+- Read-only access to content
+
+**Available tools:**
+
+| Tool | Description |
+|------|-------------|
+| `list_posts` | Get all published blog posts with metadata |
+| `get_post` | Get a single post by slug with full content |
+| `list_pages` | Get all published pages |
+| `get_page` | Get a single page by slug with full content |
+| `get_homepage` | Get homepage data with featured and recent posts |
+| `search_content` | Full text search across posts and pages |
+| `export_all` | Batch export all content |
+
+**Cursor configuration:**
+
+Add to `~/.cursor/mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "markdown-fast": {
+      "url": "https://www.markdown.fast/mcp"
+    }
+  }
+}
+```
+
+**For forks:** The MCP server automatically connects to your Convex deployment. Ensure `VITE_CONVEX_URL` is set in Netlify. Optionally set `MCP_API_KEY` for authenticated access with higher rate limits.
+
+See [How to Use the MCP Server](/how-to-use-mcp-server) for full documentation.
+
 ## Raw markdown files
 
 When you run `npm run sync` (development) or `npm run sync:prod` (production), static `.md` files are generated in `public/raw/` for each published post and page. Use `npm run sync:all` or `npm run sync:all:prod` to sync content and update discovery files together.

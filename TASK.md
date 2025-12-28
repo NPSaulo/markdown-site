@@ -7,9 +7,22 @@
 
 ## Current Status
 
-v1.38.0 ready. Improved newsletter CLI commands - `newsletter:send` now calls mutation directly and added `newsletter:send:stats` for sending weekly stats summary. Created blog post "How to use AgentMail with Markdown Sync" with complete setup guide.
+v1.39.0 ready. HTTP-based MCP (Model Context Protocol) server deployed on Netlify Edge Functions. Accessible 24/7 at /mcp endpoint with public access (50 req/min) and optional API key authentication (1000 req/min). Seven tools available: list_posts, get_post, list_pages, get_page, get_homepage, search_content, export_all. Blog post "How to Use the MCP Server" includes setup instructions for forks.
 
 ## Completed
+
+- [x] HTTP-based MCP Server on Netlify
+  - [x] Created netlify/edge-functions/mcp.ts with JSON-RPC 2.0 implementation
+  - [x] Added @modelcontextprotocol/sdk dependency to package.json
+  - [x] Configured Netlify rate limiting (50 req/min public, 1000 req/min authenticated)
+  - [x] Implemented optional authentication via Authorization header
+  - [x] Added /mcp edge function route to netlify.toml
+  - [x] Created blog post "How to Use the MCP Server" with fork setup instructions
+  - [x] Updated documentation (docs.md, setup-guide.md, files.md, changelog.md, README.md)
+  - [x] Added MCP configuration to siteConfig.ts
+  - [x] Seven tools implemented: list_posts, get_post, list_pages, get_page, get_homepage, search_content, export_all
+  - [x] CORS support for MCP clients
+  - [x] Manual JSON-RPC implementation (no SDK dependency on Deno runtime)
 
 - [x] Newsletter CLI improvements
   - [x] Updated newsletter:send to call scheduleSendPostNewsletter mutation directly

@@ -8,6 +8,52 @@ Date: 2025-12-28
 All notable changes to this project.
 ![](https://img.shields.io/badge/License-MIT-yellow.svg)
 
+## v1.39.0
+
+Released December 28, 2025
+
+**HTTP-based MCP Server**
+
+- Model Context Protocol (MCP) server deployed on Netlify Edge Functions
+  - Accessible 24/7 at `https://www.markdown.fast/mcp`
+  - No local machine required (unlike stdio-based MCP servers)
+  - Works with Cursor, Claude Desktop, and other MCP-compatible clients
+- Public access with Netlify built-in rate limiting (50 req/min per IP)
+- Optional API key authentication for higher limits (1000 req/min)
+  - Set `MCP_API_KEY` in Netlify environment variables
+  - Add `Authorization: Bearer <key>` header to requests
+- Read-only access to blog content:
+  - `list_posts`: Get all published posts with metadata
+  - `get_post`: Get single post by slug with full content
+  - `list_pages`: Get all published pages
+  - `get_page`: Get single page by slug with full content
+  - `get_homepage`: Get homepage data with featured and recent posts
+  - `search_content`: Full text search across posts and pages
+  - `export_all`: Batch export all content
+
+**Documentation**
+
+- Blog post: "How to Use the MCP Server" with client configuration examples
+- MCP Server section added to docs.md
+- MCP configuration added to siteConfig.ts
+- Setup guide updated with MCP server section
+
+**Configuration**
+
+Add to Cursor (`~/.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "markdown-fast": {
+      "url": "https://www.markdown.fast/mcp"
+    }
+  }
+}
+```
+
+Updated files: `netlify/edge-functions/mcp.ts`, `netlify.toml`, `package.json`, `src/config/siteConfig.ts`, `content/blog/how-to-use-mcp-server.md`, `content/pages/docs.md`, `content/blog/setup-guide.md`, `files.md`, `changelog.md`, `content/pages/changelog-page.md`
+
 ## v1.38.0
 
 Released December 27, 2025
