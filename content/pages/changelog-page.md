@@ -9,6 +9,26 @@ layout: "sidebar"
 All notable changes to this project.
 ![](https://img.shields.io/badge/License-MIT-yellow.svg)
 
+## v2.0.0
+
+Released December 29, 2025
+
+**Markdown sync v2 complete**
+
+- Full markdown content synchronization system
+- Real-time sync from markdown files to Convex database
+- Dashboard UI for content management
+- Sync server for executing sync commands from UI
+- Complete type safety across all Convex functions
+- Security improvements and optimizations
+
+**Technical details:**
+
+- Optimized `recordPageView` mutation to reduce unnecessary reads
+- All mutations follow Convex best practices for write conflict prevention
+- Type-safe Convex functions with proper validators
+- Security review completed with all endpoints properly secured
+
 ## v1.47.0
 
 Released December 29, 2025

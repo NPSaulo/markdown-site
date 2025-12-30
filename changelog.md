@@ -4,6 +4,25 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.0.0] - 2025-12-29
+
+### Added
+
+- Markdown sync v2 complete
+  - Full markdown content synchronization system
+  - Real-time sync from markdown files to Convex database
+  - Dashboard UI for content management
+  - Sync server for executing sync commands from UI
+  - Complete type safety across all Convex functions
+  - Security improvements and optimizations
+
+### Technical
+
+- Optimized `recordPageView` mutation to reduce unnecessary reads
+- All mutations follow Convex best practices for write conflict prevention
+- Type-safe Convex functions with proper validators
+- Security review completed with all endpoints properly secured
+
 ## [1.47.0] - 2025-12-29
 
 ### Added

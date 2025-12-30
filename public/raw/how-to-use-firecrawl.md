@@ -1,4 +1,4 @@
-# How to use Firecrawl
+# How to use Firecrawl with Markdown Sync
 
 > Import external articles as markdown posts using Firecrawl. Get your API key and configure environment variables for local imports and AI chat.
 

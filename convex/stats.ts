@@ -97,16 +97,19 @@ export const recordPageView = mutation({
       sessionId: args.sessionId,
       timestamp: now,
     });
+    
+    // Get document for aggregate components (required for insertIfDoesNotExist)
     const doc = await ctx.db.get(id);
+    if (!doc) {
+      return null;
+    }
 
     // Update aggregates with the new page view
-    if (doc) {
-      await pageViewsByPath.insertIfDoesNotExist(ctx, doc);
-      await totalPageViews.insertIfDoesNotExist(ctx, doc);
-      // Only insert into unique visitors aggregate if this is a new session
-      if (isNewVisitor) {
-        await uniqueVisitors.insertIfDoesNotExist(ctx, doc);
-      }
+    await pageViewsByPath.insertIfDoesNotExist(ctx, doc);
+    await totalPageViews.insertIfDoesNotExist(ctx, doc);
+    // Only insert into unique visitors aggregate if this is a new session
+    if (isNewVisitor) {
+      await uniqueVisitors.insertIfDoesNotExist(ctx, doc);
     }
 
     return null;

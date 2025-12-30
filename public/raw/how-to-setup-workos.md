@@ -1,4 +1,4 @@
-# How to setup WorkOS
+# How to setup WorkOS with Markdown Sync
 
 > Step-by-step guide to configure WorkOS AuthKit authentication for your markdown blog dashboard. WorkOS is optional and can be enabled in siteConfig.ts.
 

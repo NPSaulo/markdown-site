@@ -201,15 +201,17 @@ Markdown files for static pages like About, Projects, Contact, Changelog.
 
 ## Scripts (`scripts/`)
 
+**Markdown sync v2 complete** - Full markdown content synchronization system with real-time sync from markdown files to Convex database, dashboard UI for content management, and sync server for executing sync commands from UI.
+
 | File                      | Description                                           |
 | ------------------------- | ----------------------------------------------------- |
-| `sync-posts.ts`           | Syncs markdown files to Convex at build time          |
+| `sync-posts.ts`           | Syncs markdown files to Convex at build time (markdown sync v2) |
 | `sync-discovery-files.ts` | Updates AGENTS.md and llms.txt with current app data  |
 | `import-url.ts`           | Imports external URLs as markdown posts (Firecrawl)   |
 | `configure-fork.ts`       | Automated fork configuration (reads fork-config.json) |
 | `send-newsletter.ts`      | CLI tool for sending newsletter posts (npm run newsletter:send <slug>). Calls scheduleSendPostNewsletter mutation directly. |
 | `send-newsletter-stats.ts` | CLI tool for sending weekly stats summary (npm run newsletter:send:stats). Calls scheduleSendStatsSummary mutation directly. |
-| `sync-server.ts`          | Local HTTP server for executing sync commands from Dashboard UI. Runs on localhost:3001 with optional token authentication. Whitelisted commands only. |
+| `sync-server.ts`          | Local HTTP server for executing sync commands from Dashboard UI. Runs on localhost:3001 with optional token authentication. Whitelisted commands only. Part of markdown sync v2. |
 
 ### Sync Commands
 

@@ -108,6 +108,7 @@ export const siteConfig: SiteConfig = {
 
   // Featured section
   featuredViewMode: "cards", // 'list' or 'cards'
+  featuredTitle: "Get started:", // Featured section title (e.g., "Get started:", "Featured", "Popular")
   showViewToggle: true,
 
   // Logo gallery (set enabled: false to hide)
@@ -174,6 +175,26 @@ export const siteConfig: SiteConfig = {
     repo: "YOUR-REPO-NAME", // Repository name
     branch: "main", // Default branch
     contentPath: "public/raw", // Path to raw markdown files
+  },
+
+  // Stats page configuration (optional)
+  statsPage: {
+    enabled: true, // Global toggle for stats page
+    showInNav: true, // Show link in navigation (controlled via hardcodedNavItems)
+  },
+
+  // Image lightbox configuration (optional)
+  imageLightbox: {
+    enabled: true, // Enable click-to-magnify for images in posts/pages
+  },
+
+  // MCP Server configuration (optional)
+  mcpServer: {
+    enabled: true, // Global toggle for MCP server
+    endpoint: "/mcp", // Endpoint path
+    publicRateLimit: 50, // Requests per minute for public access
+    authenticatedRateLimit: 1000, // Requests per minute with API key
+    requireAuth: false, // Require API key for all requests
   },
 };
 ```
@@ -710,6 +731,141 @@ See [How to setup WorkOS](https://www.markdown.fast/how-to-setup-workos) for com
 - Analytics: Real-time stats dashboard
 
 See [How to use the Markdown sync dashboard](https://www.markdown.fast/how-to-use-the-markdown-sync-dashboard) for complete usage guide.
+
+### Dashboard Sync Server
+
+The dashboard includes a sync server feature that allows executing sync commands directly from the browser UI without opening a terminal.
+
+**Setup:**
+
+1. Start the sync server locally:
+```bash
+npm run sync-server
+```
+
+2. The server runs on `localhost:3001` and is automatically detected by the dashboard
+3. Optional: Set `SYNC_TOKEN` environment variable for authentication
+
+**Features:**
+
+- Execute sync commands from dashboard UI
+- Real-time output streaming in dashboard terminal view
+- Server status indicator (online/offline)
+- Whitelisted commands only (sync, sync:prod, sync:discovery, sync:discovery:prod, sync:all, sync:all:prod)
+
+---
+
+## Stats Page Configuration
+
+Control access to the `/stats` route for viewing site analytics.
+
+### In fork-config.json
+
+```json
+{
+  "statsPage": {
+    "enabled": true,
+    "showInNav": true
+  }
+}
+```
+
+### Manual Configuration
+
+In `src/config/siteConfig.ts`:
+
+```typescript
+statsPage: {
+  enabled: true, // Global toggle for stats page
+  showInNav: true, // Show link in navigation (controlled via hardcodedNavItems)
+},
+```
+
+**Note:** Navigation visibility is controlled via `hardcodedNavItems` configuration. Set `showInNav: false` on the stats nav item to hide it.
+
+---
+
+## Image Lightbox Configuration
+
+Enable click-to-magnify functionality for images in blog posts and pages.
+
+### In fork-config.json
+
+```json
+{
+  "imageLightbox": {
+    "enabled": true
+  }
+}
+```
+
+### Manual Configuration
+
+In `src/config/siteConfig.ts`:
+
+```typescript
+imageLightbox: {
+  enabled: true, // Enable click-to-magnify for images
+},
+```
+
+**Features:**
+
+- Click any image in a post/page to open in full-screen lightbox
+- Dark backdrop with close button (X icon)
+- Keyboard support: Press Escape to close
+- Click outside image (backdrop) to close
+- Alt text displayed as caption below image
+- Images show pointer cursor (`zoom-in`) when enabled
+
+---
+
+## MCP Server Configuration
+
+HTTP-based Model Context Protocol server for AI tool integration (Cursor, Claude Desktop).
+
+### In fork-config.json
+
+```json
+{
+  "mcpServer": {
+    "enabled": true,
+    "endpoint": "/mcp",
+    "publicRateLimit": 50,
+    "authenticatedRateLimit": 1000,
+    "requireAuth": false
+  }
+}
+```
+
+### Manual Configuration
+
+In `src/config/siteConfig.ts`:
+
+```typescript
+mcpServer: {
+  enabled: true, // Global toggle for MCP server
+  endpoint: "/mcp", // Endpoint path
+  publicRateLimit: 50, // Requests per minute for public access
+  authenticatedRateLimit: 1000, // Requests per minute with API key
+  requireAuth: false, // Require API key for all requests
+},
+```
+
+**Environment Variables:**
+
+Set `MCP_API_KEY` in Netlify environment variables for authenticated access.
+
+**Features:**
+
+- Accessible 24/7 at `https://yoursite.com/mcp`
+- Public access with Netlify built-in rate limiting (50 req/min per IP)
+- Optional API key authentication for higher limits (1000 req/min)
+- Read-only access to blog posts, pages, homepage, and search
+- 7 tools: `list_posts`, `get_post`, `list_pages`, `get_page`, `get_homepage`, `search_content`, `export_all`
+- JSON-RPC 2.0 protocol over HTTP POST
+
+See [How to Use the MCP Server](https://www.markdown.fast/how-to-use-mcp-server) for client configuration examples.
 
 ---
 
