@@ -149,6 +149,18 @@ export default defineSchema({
     .index("by_session_and_context", ["sessionId", "contextId"])
     .index("by_session", ["sessionId"]),
 
+  // AI generated images from Gemini image generation
+  aiGeneratedImages: defineTable({
+    sessionId: v.string(), // Anonymous session ID from localStorage
+    prompt: v.string(), // User's image prompt
+    model: v.string(), // Model used: "gemini-2.5-flash-image" or "gemini-3-pro-image-preview"
+    storageId: v.id("_storage"), // Convex storage ID for the generated image
+    mimeType: v.string(), // Image MIME type: "image/png" or "image/jpeg"
+    createdAt: v.number(), // Timestamp when image was generated
+  })
+    .index("by_session", ["sessionId"])
+    .index("by_createdAt", ["createdAt"]),
+
   // Newsletter subscribers table
   // Stores email subscriptions with unsubscribe tokens
   newsletterSubscribers: defineTable({

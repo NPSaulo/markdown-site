@@ -2,6 +2,8 @@
 
 After forking this repo, update these files with your site information. Choose one of two options:
 
+**Important**: Keep your `fork-config.json` file after configuring. The `sync:discovery` commands will use it to update discovery files (`AGENTS.md`, `CLAUDE.md`, `public/llms.txt`) with your configured values.
+
 ---
 
 ## Option 1: Automated Script (Recommended)
@@ -15,6 +17,8 @@ cp fork-config.json.example fork-config.json
 ```
 
 The file `fork-config.json` is gitignored, so your configuration stays local and is not committed. The `.example` file remains as a template.
+
+**Keep this file**: Even after running `npm run configure`, keep the `fork-config.json` file. Future sync commands will use it to maintain your configuration.
 
 ### Step 2: Edit fork-config.json
 
@@ -1070,7 +1074,7 @@ rightSidebar: true
 
 ## AI Chat Configuration
 
-Configure the AI writing assistant powered by Anthropic Claude.
+Configure the AI writing assistant. The Dashboard AI Agent supports multiple providers (Anthropic, OpenAI, Google) and includes image generation.
 
 ### In fork-config.json
 
@@ -1079,6 +1083,19 @@ Configure the AI writing assistant powered by Anthropic Claude.
   "aiChat": {
     "enabledOnWritePage": false,
     "enabledOnContent": false
+  },
+  "aiDashboard": {
+    "enableImageGeneration": true,
+    "defaultTextModel": "claude-sonnet-4-20250514",
+    "textModels": [
+      { "id": "claude-sonnet-4-20250514", "name": "Claude Sonnet 4", "provider": "anthropic" },
+      { "id": "gpt-4o", "name": "GPT-4o", "provider": "openai" },
+      { "id": "gemini-2.0-flash", "name": "Gemini 2.0 Flash", "provider": "google" }
+    ],
+    "imageModels": [
+      { "id": "gemini-2.0-flash-exp-image-generation", "name": "Nano Banana", "provider": "google" },
+      { "id": "imagen-3.0-generate-002", "name": "Nano Banana Pro", "provider": "google" }
+    ]
   }
 }
 ```
@@ -1092,13 +1109,35 @@ aiChat: {
   enabledOnWritePage: true,  // Show AI chat toggle on /write page
   enabledOnContent: true,    // Allow AI chat on posts/pages via frontmatter
 },
+aiDashboard: {
+  enableImageGeneration: true, // Enable image generation tab in Dashboard AI Agent
+  defaultTextModel: "claude-sonnet-4-20250514", // Default model for chat
+  textModels: [
+    { id: "claude-sonnet-4-20250514", name: "Claude Sonnet 4", provider: "anthropic" },
+    { id: "gpt-4o", name: "GPT-4o", provider: "openai" },
+    { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash", provider: "google" },
+  ],
+  imageModels: [
+    { id: "gemini-2.0-flash-exp-image-generation", name: "Nano Banana", provider: "google" },
+    { id: "imagen-3.0-generate-002", name: "Nano Banana Pro", provider: "google" },
+  ],
+},
 ```
 
 **Environment Variables (Convex):**
 
-- `ANTHROPIC_API_KEY` (required): Your Anthropic API key
+| Variable | Provider | Features |
+| --- | --- | --- |
+| `ANTHROPIC_API_KEY` | Anthropic | Claude Sonnet 4 chat |
+| `OPENAI_API_KEY` | OpenAI | GPT-4o chat |
+| `GOOGLE_AI_API_KEY` | Google | Gemini 2.0 Flash chat + image generation |
+
+**Optional system prompt variables:**
+
 - `CLAUDE_PROMPT_STYLE`, `CLAUDE_PROMPT_COMMUNITY`, `CLAUDE_PROMPT_RULES` (optional): Split system prompts
 - `CLAUDE_SYSTEM_PROMPT` (optional): Single system prompt fallback
+
+**Note:** Only configure the API keys for providers you want to use. If a key is not set, users see a helpful setup message when they try to use that model.
 
 **Frontmatter Usage:**
 
@@ -1113,6 +1152,13 @@ aiChat: true
 ```
 
 Requires `rightSidebar: true` and `siteConfig.aiChat.enabledOnContent: true`.
+
+**Dashboard AI Agent Features:**
+
+- **Chat Tab:** Multi-model selector with lazy API key validation
+- **Image Tab:** AI image generation with aspect ratio selection (1:1, 16:9, 9:16, 4:3, 3:4)
+- Images stored in Convex storage with session tracking
+- Gallery view of recent generated images
 
 ---
 
@@ -1205,11 +1251,15 @@ Update these files:
 3. Run `npm run dev` to test locally
 4. Deploy to Netlify when ready
 
+**Note**: Keep your `fork-config.json` file. When you run `npm run sync:discovery` or `npm run sync:all`, it reads from `fork-config.json` to update discovery files with your site information.
+
 ---
 
 ## Syncing Discovery Files
 
-Discovery files (`AGENTS.md` and `public/llms.txt`) can be automatically updated with your current app data.
+Discovery files (`AGENTS.md`, `CLAUDE.md`, and `public/llms.txt`) can be automatically updated with your current app data.
+
+**How it works**: The sync:discovery script reads from `fork-config.json` (if it exists) to get your site name, URL, and GitHub info. This ensures your configured values are preserved when updating discovery files.
 
 ### Commands
 

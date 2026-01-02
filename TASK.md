@@ -3,15 +3,28 @@
 ## To Do
 
 - [ ] fix site confg link
-- [ ] dashboard agent nanobanno
 - [ ] npm package
-
 
 ## Current Status
 
-v2.5.0 ready. Social footer icons can now display in header navigation.
+v2.6.0 ready. Multi-model AI chat and image generation in Dashboard.
 
 ## Completed
+
+- [x] Multi-model AI chat and image generation in Dashboard
+  - [x] AI Agent section with tab-based UI (Chat and Image Generation tabs)
+  - [x] Multi-model selector for text chat (Claude Sonnet 4, GPT-4o, Gemini 2.0 Flash)
+  - [x] Lazy API key validation with friendly setup instructions per provider
+  - [x] Image generation with Nano Banana (gemini-2.0-flash-exp-image-generation) and Nano Banana Pro (imagen-3.0-generate-002)
+  - [x] Aspect ratio selector for images (1:1, 16:9, 9:16, 4:3, 3:4)
+  - [x] Generated images stored in Convex storage with session tracking
+  - [x] New `aiDashboard` configuration in siteConfig.ts
+  - [x] New `convex/aiImageGeneration.ts` for Gemini image generation
+  - [x] New `aiGeneratedImages` table in schema for tracking generated images
+  - [x] Updated aiChatActions.ts with multi-provider support (Anthropic, OpenAI, Google)
+  - [x] Updated AIChatView.tsx with selectedModel prop
+  - [x] CSS styles for AI Agent tabs, model selectors, and image display
+  - [x] Updated files.md, changelog.md, TASK.md, changelog-page.md
 
 - [x] Social footer icons in header navigation
   - [x] Added `showInHeader` option to `siteConfig.socialFooter` config

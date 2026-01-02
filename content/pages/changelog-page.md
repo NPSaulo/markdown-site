@@ -10,6 +10,58 @@ layout: "sidebar"
 All notable changes to this project.
 ![](https://img.shields.io/badge/License-MIT-yellow.svg)
 
+## v2.6.0
+
+Released January 1, 2026
+
+**Multi-model AI chat and image generation in Dashboard**
+
+- AI Agent section with tab-based UI (Chat and Image Generation tabs)
+- Multi-model selector for text chat
+  - Claude Sonnet 4 (Anthropic)
+  - GPT-4o (OpenAI)
+  - Gemini 2.0 Flash (Google)
+- Lazy API key validation: errors only shown when user tries to use a specific model
+- Each provider has friendly setup instructions with links to get API keys
+- AI Image Generation tab
+  - Generate images using Gemini models (Nano Banana and Nano Banana Pro)
+  - Aspect ratio selector (1:1, 16:9, 9:16, 4:3, 3:4)
+  - Generated images stored in Convex storage with session tracking
+  - Markdown-rendered error messages with setup instructions
+- New `aiDashboard` configuration in siteConfig
+  - `enableImageGeneration`: Toggle image generation tab
+  - `defaultTextModel`: Set default AI model for chat
+  - `textModels`: Configure available text chat models
+  - `imageModels`: Configure available image generation models
+
+**Technical details:**
+
+- New file: `convex/aiImageGeneration.ts` for Gemini image generation action
+- New table: `aiGeneratedImages` in schema for tracking generated images
+- Updated `convex/aiChatActions.ts` with multi-provider support
+  - Added `callAnthropicApi`, `callOpenAIApi`, `callGeminiApi` helper functions
+  - Added `getProviderFromModel` to determine provider from model ID
+  - Added `getApiKeyForProvider` for lazy API key retrieval
+  - Added `getNotConfiguredMessage` for provider-specific setup instructions
+- Updated `src/components/AIChatView.tsx` with `selectedModel` prop
+- Updated `src/pages/Dashboard.tsx` with new AI Agent section
+  - Tab-based UI for Chat and Image Generation
+  - Model dropdowns with provider labels
+  - Aspect ratio selector for image generation
+- CSS styles for AI Agent section in `src/styles/global.css`
+  - `.ai-agent-tabs`, `.ai-agent-tab` for tab navigation
+  - `.ai-model-selector`, `.ai-model-dropdown` for model selection
+  - `.ai-aspect-ratio-selector` for aspect ratio options
+  - `.ai-generated-image`, `.ai-image-error`, `.ai-image-loading` for image display
+
+**Environment Variables:**
+
+- `ANTHROPIC_API_KEY`: Required for Claude models
+- `OPENAI_API_KEY`: Required for GPT-4o
+- `GOOGLE_AI_API_KEY`: Required for Gemini text chat and image generation
+
+Updated files: `convex/aiImageGeneration.ts`, `convex/aiChatActions.ts`, `convex/aiChats.ts`, `convex/schema.ts`, `src/components/AIChatView.tsx`, `src/pages/Dashboard.tsx`, `src/config/siteConfig.ts`, `src/styles/global.css`, `files.md`, `TASK.md`, `changelog.md`, `content/pages/changelog-page.md`
+
 ## v2.5.0
 
 Released January 1, 2026

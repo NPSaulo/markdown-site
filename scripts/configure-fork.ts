@@ -440,12 +440,14 @@ function updatePostTsx(config: ForkConfig): void {
   console.log("\nUpdating src/pages/Post.tsx...");
 
   updateFile("src/pages/Post.tsx", [
+    // Match any existing SITE_URL value (https://...)
     {
-      search: /const SITE_URL = "https:\/\/markdowncms\.netlify\.app";/,
+      search: /const SITE_URL = "https:\/\/[^"]+";/,
       replace: `const SITE_URL = "${config.siteUrl}";`,
     },
+    // Match any existing SITE_NAME value
     {
-      search: /const SITE_NAME = "markdown sync framework";/,
+      search: /const SITE_NAME = "[^"]+";/,
       replace: `const SITE_NAME = "${config.siteName}";`,
     },
   ]);
@@ -456,21 +458,30 @@ function updateConvexHttp(config: ForkConfig): void {
   console.log("\nUpdating convex/http.ts...");
 
   updateFile("convex/http.ts", [
+    // Match any existing SITE_URL value with process.env fallback
     {
-      search: /const SITE_URL = process\.env\.SITE_URL \|\| "https:\/\/markdowncms\.netlify\.app";/,
+      search: /const SITE_URL = process\.env\.SITE_URL \|\| "https:\/\/[^"]+";/,
       replace: `const SITE_URL = process.env.SITE_URL || "${config.siteUrl}";`,
     },
+    // Match any existing SITE_NAME value (line 10)
     {
-      search: /const SITE_NAME = "markdown sync framework";/,
+      search: /const SITE_NAME = "[^"]+";/,
       replace: `const SITE_NAME = "${config.siteName}";`,
     },
+    // Match any existing siteUrl in generateMetaHtml function
     {
-      search: /const siteUrl = process\.env\.SITE_URL \|\| "https:\/\/markdowncms\.netlify\.app";/,
+      search: /const siteUrl = process\.env\.SITE_URL \|\| "https:\/\/[^"]+";/,
       replace: `const siteUrl = process.env.SITE_URL || "${config.siteUrl}";`,
     },
+    // Match any existing siteName in generateMetaHtml function
     {
-      search: /const siteName = "markdown sync framework";/,
+      search: /const siteName = "[^"]+";/,
       replace: `const siteName = "${config.siteName}";`,
+    },
+    // Update the description in API responses
+    {
+      search: /"An open-source publishing framework[^"]*"/g,
+      replace: `"${config.siteDescription}"`,
     },
   ]);
 }
@@ -480,14 +491,17 @@ function updateConvexRss(config: ForkConfig): void {
   console.log("\nUpdating convex/rss.ts...");
 
   updateFile("convex/rss.ts", [
+    // Match any existing SITE_URL value with process.env fallback
     {
-      search: /const SITE_URL = process\.env\.SITE_URL \|\| "https:\/\/markdowncms\.netlify\.app";/,
+      search: /const SITE_URL = process\.env\.SITE_URL \|\| "https:\/\/[^"]+";/,
       replace: `const SITE_URL = process.env.SITE_URL || "${config.siteUrl}";`,
     },
+    // Match any existing SITE_TITLE value
     {
-      search: /const SITE_TITLE = "markdown sync framework";/,
+      search: /const SITE_TITLE = "[^"]+";/,
       replace: `const SITE_TITLE = "${config.siteName}";`,
     },
+    // Match any existing SITE_DESCRIPTION value (multiline)
     {
       search: /const SITE_DESCRIPTION =\s*"[^"]+";/,
       replace: `const SITE_DESCRIPTION =\n  "${config.siteDescription}";`,
@@ -500,89 +514,94 @@ function updateIndexHtml(config: ForkConfig): void {
   console.log("\nUpdating index.html...");
 
   const replacements: Array<{ search: string | RegExp; replace: string }> = [
-    // Meta description
+    // Meta description (match any content)
     {
       search: /<meta\s*name="description"\s*content="[^"]*"\s*\/>/,
       replace: `<meta\n      name="description"\n      content="${config.siteDescription}"\n    />`,
     },
-    // Meta author
+    // Meta author (match any content)
     {
       search: /<meta name="author" content="[^"]*" \/>/,
       replace: `<meta name="author" content="${config.siteName}" />`,
     },
-    // Open Graph title
+    // Open Graph title (match any content)
     {
       search: /<meta property="og:title" content="[^"]*" \/>/,
       replace: `<meta property="og:title" content="${config.siteName}" />`,
     },
-    // Open Graph description
+    // Open Graph description (match any content)
     {
       search: /<meta\s*property="og:description"\s*content="[^"]*"\s*\/>/,
       replace: `<meta\n      property="og:description"\n      content="${config.siteDescription}"\n    />`,
     },
-    // Open Graph URL
+    // Open Graph URL (match any https URL)
     {
-      search: /<meta property="og:url" content="https:\/\/markdowncms\.netlify\.app\/" \/>/,
+      search: /<meta property="og:url" content="https:\/\/[^"]*" \/>/,
       replace: `<meta property="og:url" content="${config.siteUrl}/" />`,
     },
-    // Open Graph site name
+    // Open Graph site name (match any content)
     {
-      search: /<meta property="og:site_name" content="[^"]*" \/>/,
+      search: /<meta property="og:site_name" content="[^"]*"\s*\/>/,
       replace: `<meta property="og:site_name" content="${config.siteName}" />`,
     },
-    // Open Graph image
+    // Open Graph site name with newline formatting
     {
-      search: /<meta\s*property="og:image"\s*content="https:\/\/markdowncms\.netlify\.app[^"]*"\s*\/>/,
-      replace: `<meta\n      property="og:image"\n      content="${config.siteUrl}/images/og-default.svg"\n    />`,
+      search: /<meta\s*property="og:site_name"\s*content="[^"]*"\s*>/,
+      replace: `<meta\n      property="og:site_name"\n      content="${config.siteName}"\n    >`,
     },
-    // Twitter domain
+    // Open Graph image (match any https URL)
+    {
+      search: /<meta\s*property="og:image"\s*content="https:\/\/[^"]*"\s*\/>/,
+      replace: `<meta\n      property="og:image"\n      content="${config.siteUrl}/images/og-default.png"\n    />`,
+    },
+    // Twitter domain (match any domain)
     {
       search: /<meta property="twitter:domain" content="[^"]*" \/>/,
       replace: `<meta property="twitter:domain" content="${config.siteDomain}" />`,
     },
-    // Twitter URL
+    // Twitter URL (match any https URL)
     {
-      search: /<meta property="twitter:url" content="https:\/\/markdowncms\.netlify\.app\/" \/>/,
+      search: /<meta property="twitter:url" content="https:\/\/[^"]*" \/>/,
       replace: `<meta property="twitter:url" content="${config.siteUrl}/" />`,
     },
-    // Twitter title
+    // Twitter title (match any content)
     {
       search: /<meta name="twitter:title" content="[^"]*" \/>/,
       replace: `<meta name="twitter:title" content="${config.siteName}" />`,
     },
-    // Twitter description
+    // Twitter description (match any content)
     {
       search: /<meta\s*name="twitter:description"\s*content="[^"]*"\s*\/>/,
       replace: `<meta\n      name="twitter:description"\n      content="${config.siteDescription}"\n    />`,
     },
-    // Twitter image
+    // Twitter image (match any https URL)
     {
-      search: /<meta\s*name="twitter:image"\s*content="https:\/\/markdowncms\.netlify\.app[^"]*"\s*\/>/,
-      replace: `<meta\n      name="twitter:image"\n      content="${config.siteUrl}/images/og-default.svg"\n    />`,
+      search: /<meta\s*name="twitter:image"\s*content="https:\/\/[^"]*"\s*\/>/,
+      replace: `<meta\n      name="twitter:image"\n      content="${config.siteUrl}/images/og-default.png"\n    />`,
     },
-    // JSON-LD name
+    // JSON-LD name (match any value)
     {
-      search: /"name": "markdown sync framework"/g,
-      replace: `"name": "${config.siteName}"`,
+      search: /"name": "[^"]+",\s*\n\s*"url":/g,
+      replace: `"name": "${config.siteName}",\n        "url":`,
     },
-    // JSON-LD URL
+    // JSON-LD URL (match any https URL)
     {
-      search: /"url": "https:\/\/markdowncms\.netlify\.app"/g,
+      search: /"url": "https:\/\/[^"]+"/g,
       replace: `"url": "${config.siteUrl}"`,
     },
-    // JSON-LD description
+    // JSON-LD description (match any content)
     {
-      search: /"description": "An open-source publishing framework[^"]*"/,
+      search: /"description": "[^"]+"/,
       replace: `"description": "${config.siteDescription}"`,
     },
-    // JSON-LD search target
+    // JSON-LD search target (match any URL)
     {
-      search: /"target": "https:\/\/markdowncms\.netlify\.app\/\?q=\{search_term_string\}"/,
+      search: /"target": "https:\/\/[^"]+\/\?q=\{search_term_string\}"/,
       replace: `"target": "${config.siteUrl}/?q={search_term_string}"`,
     },
-    // Page title
+    // Page title (match any title content)
     {
-      search: /<title>markdown "sync" framework<\/title>/,
+      search: /<title>[^<]+<\/title>/,
       replace: `<title>${config.siteTitle}</title>`,
     },
   ];
@@ -733,25 +752,30 @@ function updateOpenApiYaml(config: ForkConfig): void {
   const githubUrl = `https://github.com/${config.githubUsername}/${config.githubRepo}`;
 
   updateFile("public/openapi.yaml", [
+    // Match any title ending with API
     {
-      search: /title: markdown sync framework API/,
+      search: /title: .+ API/,
       replace: `title: ${config.siteName} API`,
     },
+    // Match any GitHub contact URL
     {
-      search: /url: https:\/\/github\.com\/waynesutton\/markdown-site/,
+      search: /url: https:\/\/github\.com\/[^\/]+\/[^\s]+/,
       replace: `url: ${githubUrl}`,
     },
+    // Match any server URL (production server line)
     {
-      search: /- url: https:\/\/markdowncms\.netlify\.app/,
-      replace: `- url: ${config.siteUrl}`,
+      search: /- url: https:\/\/[^\s]+\n\s+description: Production server/,
+      replace: `- url: ${config.siteUrl}\n    description: Production server`,
     },
+    // Match any example site name
     {
-      search: /example: markdown sync framework/g,
-      replace: `example: ${config.siteName}`,
+      search: /example: .+\n\s+url:/g,
+      replace: `example: ${config.siteName}\n                    url:`,
     },
+    // Match any example URL (for site URL)
     {
-      search: /example: https:\/\/markdowncms\.netlify\.app/g,
-      replace: `example: ${config.siteUrl}`,
+      search: /example: https:\/\/[^\s]+\n\s+posts:/,
+      replace: `example: ${config.siteUrl}\n                  posts:`,
     },
   ]);
 }

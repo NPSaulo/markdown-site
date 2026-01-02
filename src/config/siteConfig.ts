@@ -114,6 +114,22 @@ export interface AIChatConfig {
   enabledOnContent: boolean; // Allow AI chat on posts/pages via frontmatter aiChat: true
 }
 
+// AI Model configuration for Dashboard multi-model support
+export interface AIModelOption {
+  id: string; // Model identifier (e.g., "claude-sonnet-4-20250514", "gpt-4o")
+  name: string; // Display name (e.g., "Claude Sonnet 4", "GPT-4o")
+  provider: "anthropic" | "openai" | "google"; // Provider for the model
+}
+
+// AI Dashboard configuration
+// Controls multi-model AI chat and image generation in the Dashboard
+export interface AIDashboardConfig {
+  enableImageGeneration: boolean; // Enable image generation tab
+  defaultTextModel: string; // Default model ID for text chat
+  textModels: AIModelOption[]; // Available text models
+  imageModels: AIModelOption[]; // Available image generation models
+}
+
 // Newsletter signup placement configuration
 // Controls where signup forms appear on the site
 export interface NewsletterSignupPlacement {
@@ -323,6 +339,9 @@ export interface SiteConfig {
 
   // Image lightbox configuration (optional)
   imageLightbox?: ImageLightboxConfig;
+
+  // AI Dashboard configuration (optional)
+  aiDashboard?: AIDashboardConfig;
 }
 
 // Default site configuration
@@ -644,6 +663,46 @@ export const siteConfig: SiteConfig = {
   // Images open in a full-screen lightbox overlay when clicked
   imageLightbox: {
     enabled: true, // Set to false to disable image lightbox
+  },
+
+  // AI Dashboard configuration
+  // Multi-model AI chat and image generation in the Dashboard
+  // Requires API keys in Convex environment variables:
+  // - ANTHROPIC_API_KEY for Claude models
+  // - OPENAI_API_KEY for OpenAI models
+  // - GOOGLE_AI_API_KEY for Gemini models (chat and image generation)
+  aiDashboard: {
+    enableImageGeneration: true, // Enable image generation tab
+    defaultTextModel: "claude-sonnet-4-20250514", // Default model for text chat
+    textModels: [
+      {
+        id: "claude-sonnet-4-20250514",
+        name: "Claude Sonnet 4",
+        provider: "anthropic",
+      },
+      {
+        id: "gpt-4o",
+        name: "GPT-4o",
+        provider: "openai",
+      },
+      {
+        id: "gemini-2.0-flash",
+        name: "Gemini 2.0 Flash",
+        provider: "google",
+      },
+    ],
+    imageModels: [
+      {
+        id: "gemini-2.0-flash-exp-image-generation",
+        name: "Nano Banana",
+        provider: "google",
+      },
+      {
+        id: "imagen-3.0-generate-002",
+        name: "Nano Banana Pro",
+        provider: "google",
+      },
+    ],
   },
 };
 

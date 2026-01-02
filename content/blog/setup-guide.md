@@ -1536,7 +1536,7 @@ Content is stored in localStorage only and not synced to the database. Refreshin
 
 ## AI Agent chat
 
-The site includes an AI writing assistant (Agent) powered by Anthropic Claude API. Agent can be enabled in two places:
+The site includes an AI writing assistant (Agent) that supports multiple AI providers. Agent can be enabled in three places:
 
 **1. Write page (`/write`)**
 
@@ -1566,11 +1566,39 @@ aiChat: true # Enable Agent in right sidebar
 ---
 ```
 
+**3. Dashboard AI Agent (`/dashboard`)**
+
+The Dashboard includes a dedicated AI Agent section with a tab-based UI for Chat and Image Generation.
+
+**Chat Tab features:**
+
+- Multi-model selector: Claude Sonnet 4, GPT-4o, Gemini 2.0 Flash
+- Per-session chat history stored in Convex
+- Markdown rendering for AI responses
+- Copy functionality for AI responses
+- Lazy API key validation (errors only shown when user tries to use a specific model)
+
+**Image Tab features:**
+
+- AI image generation with two models:
+  - Nano Banana (gemini-2.0-flash-exp-image-generation) - Experimental model
+  - Nano Banana Pro (imagen-3.0-generate-002) - Production model
+- Aspect ratio selection: 1:1, 16:9, 9:16, 4:3, 3:4
+- Images stored in Convex storage with session tracking
+- Gallery view of recent generated images
+
 **Environment variables:**
 
-Agent requires the following Convex environment variables:
+Agent requires API keys for the providers you want to use. Set these in Convex environment variables:
 
-- `ANTHROPIC_API_KEY` (required): Your Anthropic API key for Claude API access
+| Variable | Provider | Features |
+| --- | --- | --- |
+| `ANTHROPIC_API_KEY` | Anthropic | Claude Sonnet 4 chat |
+| `OPENAI_API_KEY` | OpenAI | GPT-4o chat |
+| `GOOGLE_AI_API_KEY` | Google | Gemini 2.0 Flash chat + image generation |
+
+**Optional system prompt variables:**
+
 - `CLAUDE_PROMPT_STYLE` (optional): First part of system prompt
 - `CLAUDE_PROMPT_COMMUNITY` (optional): Second part of system prompt
 - `CLAUDE_PROMPT_RULES` (optional): Third part of system prompt
@@ -1581,7 +1609,10 @@ Agent requires the following Convex environment variables:
 1. Go to [Convex Dashboard](https://dashboard.convex.dev)
 2. Select your project
 3. Navigate to Settings > Environment Variables
-4. Add `ANTHROPIC_API_KEY` with your API key value
+4. Add API keys for the providers you want to use:
+   - `ANTHROPIC_API_KEY` for Claude
+   - `OPENAI_API_KEY` for GPT-4o
+   - `GOOGLE_AI_API_KEY` for Gemini and image generation
 5. Optionally add system prompt variables (`CLAUDE_PROMPT_STYLE`, etc.)
 6. Deploy changes
 
@@ -1592,11 +1623,11 @@ Agent requires the following Convex environment variables:
 - Chat history is stored per-session, per-context in Convex (aiChats table)
 - Page content can be provided as context for AI responses
 - Chat history limited to last 20 messages for efficiency
-- If API key is not set, Agent displays "API key is not set" error message
+- API key validation is lazy: errors only appear when you try to use a specific model
 
 **Error handling:**
 
-If `ANTHROPIC_API_KEY` is not configured in Convex environment variables, Agent displays a user-friendly error message: "API key is not set". This helps identify when the API key is missing in production deployments.
+If an API key is not configured for a provider, Agent displays a user-friendly setup message with instructions when you try to use that model. Only configure the API keys for providers you want to use.
 
 ## Dashboard
 

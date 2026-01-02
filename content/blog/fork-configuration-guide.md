@@ -309,6 +309,8 @@ Once configuration is complete:
 3. **Test locally**: Run `npm run dev` and verify your site name, footer, and metadata
 4. **Push to git**: Commit all changes and push to trigger a Netlify rebuild
 
+**Important**: Keep your `fork-config.json` file. The `sync:discovery` and `sync:all` commands read from it to update discovery files (`AGENTS.md`, `CLAUDE.md`, `public/llms.txt`) with your configured values. Without it, these files would revert to placeholder values.
+
 ## Existing content
 
 The configuration script only updates site-level settings. It does not modify your markdown content in `content/blog/` or `content/pages/`. Your existing posts and pages remain unchanged.

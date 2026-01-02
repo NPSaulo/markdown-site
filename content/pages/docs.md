@@ -4,7 +4,7 @@ slug: "docs"
 published: true
 order: 0
 layout: "sidebar"
-aiChat: false
+aiChat: true
 rightSidebar: true
 showFooter: true
 ---
@@ -1096,11 +1096,34 @@ When `requireAuth` is `false`, the dashboard is open access. When `requireAuth` 
 
 ### AI Agent
 
-- Dedicated AI chat section separate from the Write page
-- Uses Anthropic Claude API (requires `ANTHROPIC_API_KEY` in Convex environment)
+The Dashboard includes a dedicated AI Agent section with tab-based UI for Chat and Image Generation.
+
+**Chat Tab:**
+
+- Multi-model selector: Claude Sonnet 4, GPT-4o, Gemini 2.0 Flash
 - Per-session chat history stored in Convex
 - Markdown rendering for AI responses
 - Copy functionality for AI responses
+- Lazy API key validation (errors only shown when user tries to use a specific model)
+
+**Image Tab:**
+
+- AI image generation with two models:
+  - Nano Banana (gemini-2.0-flash-exp-image-generation) - Experimental model
+  - Nano Banana Pro (imagen-3.0-generate-002) - Production model
+- Aspect ratio selection: 1:1, 16:9, 9:16, 4:3, 3:4
+- Images stored in Convex storage with session tracking
+- Gallery view of recent generated images
+
+**Environment Variables (Convex):**
+
+| Variable | Description |
+| --- | --- |
+| `ANTHROPIC_API_KEY` | Required for Claude Sonnet 4 |
+| `OPENAI_API_KEY` | Required for GPT-4o |
+| `GOOGLE_AI_API_KEY` | Required for Gemini 2.0 Flash and image generation |
+
+**Note:** Only configure the API keys for models you want to use. If a key is not set, users see a helpful setup message when they try to use that model.
 
 ### Newsletter Management
 

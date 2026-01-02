@@ -46,7 +46,7 @@ This is the homepage index of all published content.
 - **[Footer](/raw/footer.md)**
 - **[Home Intro](/raw/home-intro.md)**
 - **[Docs](/raw/docs.md)**
-- **[About](/raw/about.md)** - An open-source publishing framework built for AI agents and developers to ship websites, docs, or blogs..
+- **[About](/raw/about.md)** - An open-source publishing framework built for AI agents and developers to ship websites, docs, or blogs.
 - **[Projects](/raw/projects.md)**
 - **[Contact](/raw/contact.md)**
 - **[Changelog](/raw/changelog.md)**

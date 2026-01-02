@@ -26,6 +26,7 @@
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.71.2",
+    "@google/genai": "^1.0.1",
     "@convex-dev/aggregate": "^0.2.0",
     "@convex-dev/workos": "^0.0.1",
     "@mendable/firecrawl-js": "^1.21.1",

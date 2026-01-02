@@ -10,6 +10,7 @@
 
 import type * as aiChatActions from "../aiChatActions.js";
 import type * as aiChats from "../aiChats.js";
+import type * as aiImageGeneration from "../aiImageGeneration.js";
 import type * as contact from "../contact.js";
 import type * as contactActions from "../contactActions.js";
 import type * as crons from "../crons.js";
@@ -31,6 +32,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   aiChatActions: typeof aiChatActions;
   aiChats: typeof aiChats;
+  aiImageGeneration: typeof aiImageGeneration;
   contact: typeof contact;
   contactActions: typeof contactActions;
   crons: typeof crons;

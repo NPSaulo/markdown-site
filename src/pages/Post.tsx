@@ -16,8 +16,8 @@ import { ArrowLeft, Link as LinkIcon, Twitter, Rss, Tag } from "lucide-react";
 import { useState, useEffect } from "react";
 import siteConfig from "../config/siteConfig";
 
-// Site configuration
-const SITE_URL = "https://wwwmarkdown.fast";
+// Site configuration - update these for your site (or run npm run configure)
+const SITE_URL = "https://www.markdown.fast";
 const SITE_NAME = "markdown sync framework";
 const DEFAULT_OG_IMAGE = "/images/og-default.svg";
 

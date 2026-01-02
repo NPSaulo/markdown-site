@@ -1,6 +1,6 @@
 import { useState, useCallback, useMemo, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { useQuery, useMutation } from "convex/react";
+import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import type { Id } from "../../convex/_generated/dataModel";
 import { useTheme } from "../context/ThemeContext";
@@ -52,6 +52,10 @@ import {
   ClockCounterClockwise,
   TrendUp,
   SidebarSimple,
+  Image,
+  ChatText,
+  SpinnerGap,
+  CaretDown,
 } from "@phosphor-icons/react";
 import siteConfig from "../config/siteConfig";
 import AIChatView from "../components/AIChatView";
@@ -2383,9 +2387,226 @@ published: false
 }
 
 function AIAgentSection() {
+  const [activeTab, setActiveTab] = useState<"chat" | "image">("chat");
+  const [selectedTextModel, setSelectedTextModel] = useState(
+    siteConfig.aiDashboard?.defaultTextModel || "claude-sonnet-4-20250514"
+  );
+  const [selectedImageModel, setSelectedImageModel] = useState(
+    siteConfig.aiDashboard?.imageModels?.[0]?.id || "gemini-2.0-flash-exp-image-generation"
+  );
+  const [aspectRatio, setAspectRatio] = useState<"1:1" | "16:9" | "9:16" | "4:3" | "3:4">("1:1");
+  const [imagePrompt, setImagePrompt] = useState("");
+  const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+  const [generatedImage, setGeneratedImage] = useState<{ url: string; prompt: string } | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const [showImageModelDropdown, setShowImageModelDropdown] = useState(false);
+  const [showTextModelDropdown, setShowTextModelDropdown] = useState(false);
+
+  const generateImage = useAction(api.aiImageGeneration.generateImage);
+
+  const textModels = siteConfig.aiDashboard?.textModels || [
+    { id: "claude-sonnet-4-20250514", name: "Claude Sonnet 4", provider: "anthropic" as const },
+  ];
+  const imageModels = siteConfig.aiDashboard?.imageModels || [
+    { id: "gemini-2.0-flash-exp-image-generation", name: "Nano Banana", provider: "google" as const },
+  ];
+
+  const enableImageGeneration = siteConfig.aiDashboard?.enableImageGeneration ?? true;
+
+  const handleGenerateImage = async () => {
+    if (!imagePrompt.trim() || isGeneratingImage) return;
+
+    setIsGeneratingImage(true);
+    setImageError(null);
+    setGeneratedImage(null);
+
+    try {
+      const result = await generateImage({
+        sessionId: localStorage.getItem("ai_chat_session_id") || crypto.randomUUID(),
+        prompt: imagePrompt,
+        model: selectedImageModel as "gemini-2.0-flash-exp-image-generation" | "imagen-3.0-generate-002",
+        aspectRatio,
+      });
+
+      if (result.success && result.url) {
+        setGeneratedImage({ url: result.url, prompt: imagePrompt });
+        setImagePrompt("");
+      } else if (result.error) {
+        setImageError(result.error);
+      }
+    } catch (error) {
+      setImageError(error instanceof Error ? error.message : "Failed to generate image");
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
+
+  const selectedTextModelName = textModels.find(m => m.id === selectedTextModel)?.name || "Claude Sonnet 4";
+  const selectedImageModelName = imageModels.find(m => m.id === selectedImageModel)?.name || "Nano Banana";
+
   return (
     <div className="dashboard-ai-section">
-      <AIChatView contextId="dashboard-agent" />
+      {/* Tabs */}
+      <div className="ai-agent-tabs">
+        <button
+          className={`ai-agent-tab ${activeTab === "chat" ? "active" : ""}`}
+          onClick={() => setActiveTab("chat")}
+        >
+          <ChatText size={18} weight="bold" />
+          <span>Chat</span>
+        </button>
+        {enableImageGeneration && (
+          <button
+            className={`ai-agent-tab ${activeTab === "image" ? "active" : ""}`}
+            onClick={() => setActiveTab("image")}
+          >
+            <Image size={18} weight="bold" />
+            <span>Image</span>
+          </button>
+        )}
+      </div>
+
+      {/* Chat Tab */}
+      {activeTab === "chat" && (
+        <div className="ai-agent-chat-container">
+          {/* Model Selector */}
+          <div className="ai-model-selector">
+            <span className="ai-model-label">Model:</span>
+            <div className="ai-model-dropdown-container">
+              <button
+                className="ai-model-dropdown-trigger"
+                onClick={() => setShowTextModelDropdown(!showTextModelDropdown)}
+              >
+                <span>{selectedTextModelName}</span>
+                <CaretDown size={14} weight="bold" />
+              </button>
+              {showTextModelDropdown && (
+                <div className="ai-model-dropdown">
+                  {textModels.map((model) => (
+                    <button
+                      key={model.id}
+                      className={`ai-model-option ${selectedTextModel === model.id ? "selected" : ""}`}
+                      onClick={() => {
+                        setSelectedTextModel(model.id);
+                        setShowTextModelDropdown(false);
+                      }}
+                    >
+                      <span className="ai-model-name">{model.name}</span>
+                      <span className="ai-model-provider">{model.provider}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+          <AIChatView contextId="dashboard-agent" selectedModel={selectedTextModel} />
+        </div>
+      )}
+
+      {/* Image Generation Tab */}
+      {activeTab === "image" && enableImageGeneration && (
+        <div className="ai-agent-image-container">
+          {/* Image Model Selector */}
+          <div className="ai-model-selector">
+            <span className="ai-model-label">Model:</span>
+            <div className="ai-model-dropdown-container">
+              <button
+                className="ai-model-dropdown-trigger"
+                onClick={() => setShowImageModelDropdown(!showImageModelDropdown)}
+              >
+                <span>{selectedImageModelName}</span>
+                <CaretDown size={14} weight="bold" />
+              </button>
+              {showImageModelDropdown && (
+                <div className="ai-model-dropdown">
+                  {imageModels.map((model) => (
+                    <button
+                      key={model.id}
+                      className={`ai-model-option ${selectedImageModel === model.id ? "selected" : ""}`}
+                      onClick={() => {
+                        setSelectedImageModel(model.id);
+                        setShowImageModelDropdown(false);
+                      }}
+                    >
+                      <span className="ai-model-name">{model.name}</span>
+                      <span className="ai-model-provider">{model.provider}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Aspect Ratio Selector */}
+          <div className="ai-aspect-ratio-selector">
+            <span className="ai-model-label">Aspect:</span>
+            <div className="ai-aspect-ratio-options">
+              {(["1:1", "16:9", "9:16", "4:3", "3:4"] as const).map((ratio) => (
+                <button
+                  key={ratio}
+                  className={`ai-aspect-ratio-option ${aspectRatio === ratio ? "selected" : ""}`}
+                  onClick={() => setAspectRatio(ratio)}
+                >
+                  {ratio}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Generated Image Display */}
+          {generatedImage && (
+            <div className="ai-generated-image">
+              <img src={generatedImage.url} alt={generatedImage.prompt} />
+              <p className="ai-generated-image-prompt">{generatedImage.prompt}</p>
+            </div>
+          )}
+
+          {/* Error Display */}
+          {imageError && (
+            <div className="ai-image-error">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>{imageError}</ReactMarkdown>
+            </div>
+          )}
+
+          {/* Loading State */}
+          {isGeneratingImage && (
+            <div className="ai-image-loading">
+              <SpinnerGap size={32} weight="bold" className="ai-image-spinner" />
+              <span>Generating image...</span>
+            </div>
+          )}
+
+          {/* Prompt Input */}
+          <div className="ai-image-input-container">
+            <textarea
+              className="ai-image-input"
+              value={imagePrompt}
+              onChange={(e) => setImagePrompt(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleGenerateImage();
+                }
+              }}
+              placeholder="Describe the image you want to generate..."
+              rows={3}
+              disabled={isGeneratingImage}
+            />
+            <button
+              className="ai-image-generate-button"
+              onClick={handleGenerateImage}
+              disabled={!imagePrompt.trim() || isGeneratingImage}
+            >
+              {isGeneratingImage ? (
+                <SpinnerGap size={18} weight="bold" className="ai-image-spinner" />
+              ) : (
+                <Image size={18} weight="bold" />
+              )}
+              <span>Generate</span>
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
