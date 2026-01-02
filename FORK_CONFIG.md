@@ -955,7 +955,7 @@ Set `showFooter: false` in post/page frontmatter to hide footer on specific page
 
 ## Social Footer Configuration
 
-Display social icons and copyright information below the main footer.
+Display social icons and copyright information below the main footer. Icons can also appear in the header.
 
 ### In fork-config.json
 
@@ -967,6 +967,7 @@ Display social icons and copyright information below the main footer.
     "showOnPosts": true,
     "showOnPages": true,
     "showOnBlogPage": true,
+    "showInHeader": true,
     "socialLinks": [
       {
         "platform": "github",
@@ -996,6 +997,7 @@ socialFooter: {
   showOnPosts: true,
   showOnPages: true,
   showOnBlogPage: true,
+  showInHeader: true, // Show social icons in header (left of search icon)
   socialLinks: [
     { platform: "github", url: "https://github.com/username" },
     { platform: "twitter", url: "https://x.com/handle" },
@@ -1009,6 +1011,10 @@ socialFooter: {
 ```
 
 **Supported Platforms:** github, twitter, linkedin, instagram, youtube, tiktok, discord, website
+
+**Header Social Icons:**
+
+When `showInHeader: true`, social icons appear in the navigation header to the left of the search icon on desktop. This provides additional visibility for your social links while maintaining the footer placement.
 
 **Frontmatter Override:**
 

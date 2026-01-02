@@ -4,6 +4,26 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.5.0] - 2026-01-01
+
+### Added
+
+- Social footer icons in header navigation
+  - New `showInHeader` option in `siteConfig.socialFooter` to display social icons in the header
+  - Social icons appear left of the search icon on desktop viewports
+  - Uses same icons and links as the social footer component
+  - Configurable via siteConfig, FORK_CONFIG.md, and fork-config.json
+  - Disabled by default (set `showInHeader: true` to enable)
+
+### Technical
+
+- Exported `platformIcons` from `SocialFooter.tsx` for reuse in Layout component
+- Added social icon rendering in `Layout.tsx` header controls
+- Added `.header-social-links` and `.header-social-link` CSS styles in `global.css`
+- Updated `SocialFooterConfig` interface with `showInHeader: boolean`
+- Added socialFooter support to `configure-fork.ts` script
+- Updated documentation: FORK_CONFIG.md, fork-config.json.example, docs.md, setup-guide.md
+
 ## [2.4.0] - 2026-01-01
 
 ### Added

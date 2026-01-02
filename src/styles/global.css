@@ -391,6 +391,31 @@ body {
   gap: 8px;
 }
 
+/* Header social links (shown left of search when enabled) */
+.header-social-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-right: 8px;
+  padding-right: 8px;
+  border-right: 1px solid var(--border-color);
+}
+
+.header-social-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-secondary);
+  padding: 4px;
+  border-radius: 4px;
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.header-social-link:hover {
+  color: var(--text-primary);
+  background-color: var(--hover-bg);
+}
+
 /* Page navigation links (About, Projects, Contact, etc.) */
 .page-nav {
   display: flex;

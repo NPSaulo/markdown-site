@@ -4,7 +4,8 @@ slug: "docs"
 published: true
 order: 0
 layout: "sidebar"
-aiChat: true
+aiChat: false
+rightSidebar: true
 showFooter: true
 ---
 

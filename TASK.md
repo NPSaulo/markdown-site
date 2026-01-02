@@ -2,14 +2,24 @@
 
 ## To Do
 
-- [ ] site confg add header icons
 - [ ] fix site confg link
+- [ ] dashboard agent nanobanno
+- [ ] npm package
+
 
 ## Current Status
 
-v2.4.0 ready. YouTube and Twitter/X embed support with domain whitelisting.
+v2.5.0 ready. Social footer icons can now display in header navigation.
 
 ## Completed
+
+- [x] Social footer icons in header navigation
+  - [x] Added `showInHeader` option to `siteConfig.socialFooter` config
+  - [x] Exported `platformIcons` from SocialFooter.tsx for reuse
+  - [x] Updated Layout.tsx to render social icons in header (left of search)
+  - [x] Added CSS styles for `.header-social-links` and `.header-social-link`
+  - [x] Added showInHeader to configure-fork.ts for automated setup
+  - [x] Updated FORK_CONFIG.md, fork-config.json.example, docs.md, setup-guide.md
 
 - [x] YouTube and Twitter/X embed support with domain whitelisting
   - [x] Added `ALLOWED_IFRAME_DOMAINS` constant for whitelisted domains (YouTube, Twitter/X)

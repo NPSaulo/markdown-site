@@ -80,6 +80,7 @@
     "showOnPosts": true,
     "showOnPages": true,
     "showOnBlogPage": true,
+    "showInHeader": true,
     "socialLinks": [
       {
         "platform": "github",

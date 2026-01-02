@@ -10,6 +10,28 @@ layout: "sidebar"
 All notable changes to this project.
 ![](https://img.shields.io/badge/License-MIT-yellow.svg)
 
+## v2.5.0
+
+Released January 1, 2026
+
+**Social footer icons in header navigation**
+
+- New `showInHeader` option in `siteConfig.socialFooter` to display social icons in the header
+  - Social icons appear left of the search icon on desktop viewports
+  - Uses same icons and links as the social footer component
+  - Configurable via siteConfig, FORK_CONFIG.md, and fork-config.json
+  - Set `showInHeader: true` in socialFooter config to enable
+
+**Technical details:**
+
+- Exported `platformIcons` from `src/components/SocialFooter.tsx` for reuse
+- Added social icon rendering in `src/components/Layout.tsx` header controls
+- Added `.header-social-links` and `.header-social-link` CSS styles
+- Updated `SocialFooterConfig` interface with `showInHeader: boolean`
+- Added socialFooter support to `scripts/configure-fork.ts`
+
+Updated files: `src/config/siteConfig.ts`, `src/components/SocialFooter.tsx`, `src/components/Layout.tsx`, `src/styles/global.css`, `scripts/configure-fork.ts`, `FORK_CONFIG.md`, `fork-config.json.example`, `public/raw/docs.md`, `public/raw/setup-guide.md`, `files.md`, `TASK.md`, `changelog.md`, `content/pages/changelog-page.md`
+
 ## v2.4.0
 
 Released January 1, 2026

@@ -226,6 +226,7 @@ export interface SocialFooterConfig {
   showOnPosts: boolean; // Default: show social footer on blog posts
   showOnPages: boolean; // Default: show social footer on static pages
   showOnBlogPage: boolean; // Show social footer on /blog page
+  showInHeader: boolean; // Show social icons in header (left of search icon)
   socialLinks: SocialLink[]; // Array of social links to display
   copyright: {
     siteName: string; // Site name or company name displayed in copyright
@@ -491,7 +492,7 @@ export const siteConfig: SiteConfig = {
   },
 
   // Footer configuration
-// Footer content is loaded from content/pages/footer.md (synced via npm run sync)
+  // Footer content is loaded from content/pages/footer.md (synced via npm run sync)
   // Use showFooter: false in frontmatter to hide footer on specific posts/pages
   footer: {
     enabled: true, // Global toggle for footer
@@ -568,6 +569,7 @@ export const siteConfig: SiteConfig = {
     showOnPosts: true, // Default: show social footer on blog posts
     showOnPages: true, // Default: show social footer on static pages
     showOnBlogPage: true, // Show social footer on /blog page
+    showInHeader: true, // Show social icons in header (left of search icon)
     socialLinks: [
       {
         platform: "github",

@@ -9,10 +9,12 @@ import {
   TiktokLogo,
   DiscordLogo,
   Globe,
+  type Icon,
 } from "@phosphor-icons/react";
 
 // Map platform names to Phosphor icons
-const platformIcons: Record<SocialLink["platform"], React.ComponentType<{ size?: number; weight?: "regular" | "bold" | "fill" }>> = {
+// Exported for reuse in header social icons
+export const platformIcons: Record<SocialLink["platform"], Icon> = {
   github: GithubLogo,
   twitter: TwitterLogo,
   linkedin: LinkedinLogo,

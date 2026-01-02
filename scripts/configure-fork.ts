@@ -83,6 +83,22 @@ interface ForkConfig {
     slug?: string;
     originalHomeRoute?: string;
   };
+  socialFooter?: {
+    enabled?: boolean;
+    showOnHomepage?: boolean;
+    showOnPosts?: boolean;
+    showOnPages?: boolean;
+    showOnBlogPage?: boolean;
+    showInHeader?: boolean;
+    socialLinks?: Array<{
+      platform: string;
+      url: string;
+    }>;
+    copyright?: {
+      siteName?: string;
+      showYear?: boolean;
+    };
+  };
 }
 
 // Get project root directory
@@ -317,6 +333,58 @@ function updateSiteConfig(config: ForkConfig): void {
     /contentPath: ['"].*?['"],\s*\/\/ Path to raw markdown files/,
     `contentPath: "${gitHubRepoContentPath}", // Path to raw markdown files`,
   );
+
+  // Update socialFooter if specified
+  if (config.socialFooter) {
+    if (config.socialFooter.enabled !== undefined) {
+      content = content.replace(
+        /socialFooter: \{[\s\S]*?enabled: (?:true|false),\s*\/\/ Global toggle for social footer/,
+        `socialFooter: {\n    enabled: ${config.socialFooter.enabled}, // Global toggle for social footer`,
+      );
+    }
+    if (config.socialFooter.showOnHomepage !== undefined) {
+      content = content.replace(
+        /showOnHomepage: (?:true|false),\s*\/\/ Show social footer on homepage/,
+        `showOnHomepage: ${config.socialFooter.showOnHomepage}, // Show social footer on homepage`,
+      );
+    }
+    if (config.socialFooter.showOnPosts !== undefined) {
+      content = content.replace(
+        /showOnPosts: (?:true|false),\s*\/\/ Default: show social footer on blog posts/,
+        `showOnPosts: ${config.socialFooter.showOnPosts}, // Default: show social footer on blog posts`,
+      );
+    }
+    if (config.socialFooter.showOnPages !== undefined) {
+      content = content.replace(
+        /showOnPages: (?:true|false),\s*\/\/ Default: show social footer on static pages/,
+        `showOnPages: ${config.socialFooter.showOnPages}, // Default: show social footer on static pages`,
+      );
+    }
+    if (config.socialFooter.showOnBlogPage !== undefined) {
+      content = content.replace(
+        /showOnBlogPage: (?:true|false),\s*\/\/ Show social footer on \/blog page/,
+        `showOnBlogPage: ${config.socialFooter.showOnBlogPage}, // Show social footer on /blog page`,
+      );
+    }
+    if (config.socialFooter.showInHeader !== undefined) {
+      content = content.replace(
+        /showInHeader: (?:true|false),\s*\/\/ Show social icons in header/,
+        `showInHeader: ${config.socialFooter.showInHeader}, // Show social icons in header`,
+      );
+    }
+    if (config.socialFooter.copyright?.siteName) {
+      content = content.replace(
+        /siteName: ['"].*?['"],\s*\/\/ Update with your site\/company name/,
+        `siteName: "${config.socialFooter.copyright.siteName}", // Update with your site/company name`,
+      );
+    }
+    if (config.socialFooter.copyright?.showYear !== undefined) {
+      content = content.replace(
+        /showYear: (?:true|false),\s*\/\/ Auto-updates to current year/,
+        `showYear: ${config.socialFooter.copyright.showYear}, // Auto-updates to current year`,
+      );
+    }
+  }
 
   fs.writeFileSync(filePath, content, "utf-8");
   console.log(`  Updated: src/config/siteConfig.ts`);
