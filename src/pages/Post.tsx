@@ -1,24 +1,103 @@
-import { useParams, Link, useNavigate } from "react-router-dom";
+import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { useQuery } from "convex/react";
 import { api } from "../../convex/_generated/api";
 import BlogPost from "../components/BlogPost";
 import CopyPageDropdown from "../components/CopyPageDropdown";
+import PageSidebar from "../components/PageSidebar";
+import RightSidebar from "../components/RightSidebar";
+import DocsLayout from "../components/DocsLayout";
+import Footer from "../components/Footer";
+import SocialFooter from "../components/SocialFooter";
+import NewsletterSignup from "../components/NewsletterSignup";
+import ContactForm from "../components/ContactForm";
+import { extractHeadings } from "../utils/extractHeadings";
+import { useSidebar } from "../context/SidebarContext";
 import { format, parseISO } from "date-fns";
-import { ArrowLeft, Link as LinkIcon, Twitter, Rss } from "lucide-react";
+import { ArrowLeft, Link as LinkIcon, Twitter, Rss, Tag } from "lucide-react";
 import { useState, useEffect } from "react";
+import siteConfig from "../config/siteConfig";
 
-// Site configuration
-const SITE_URL = "https://markdowncms.netlify.app";
-const SITE_NAME = "Markdown Site";
+// Site configuration - update these for your site (or run npm run configure)
+const SITE_URL = "https://www.markdown.fast";
+const SITE_NAME = "markdown sync framework";
 const DEFAULT_OG_IMAGE = "/images/og-default.svg";
 
-export default function Post() {
-  const { slug } = useParams<{ slug: string }>();
+interface PostProps {
+  slug?: string; // Optional slug prop when used as homepage
+  isHomepage?: boolean; // Flag to indicate this is the homepage
+  homepageType?: "page" | "post"; // Type of homepage content
+}
+
+export default function Post({
+  slug: propSlug,
+  isHomepage = false,
+  homepageType,
+}: PostProps = {}) {
+  const { slug: routeSlug } = useParams<{ slug: string }>();
   const navigate = useNavigate();
+  const location = useLocation();
+  const { setHeadings, setActiveId } = useSidebar();
+
+  // Use prop slug if provided (for homepage), otherwise use route slug
+  const slug = propSlug || routeSlug;
+
   // Check for page first, then post
   const page = useQuery(api.pages.getPageBySlug, slug ? { slug } : "skip");
   const post = useQuery(api.posts.getPostBySlug, slug ? { slug } : "skip");
+
+  // Fetch related posts based on current post's tags (only for blog posts, not pages)
+  const relatedPosts = useQuery(
+    api.posts.getRelatedPosts,
+    post && !page
+      ? { currentSlug: post.slug, tags: post.tags, limit: 3 }
+      : "skip",
+  );
+
   const [copied, setCopied] = useState(false);
+
+  // Scroll to hash anchor after content loads
+  useEffect(() => {
+    if (!location.hash) return;
+    if (page === undefined && post === undefined) return;
+
+    // Small delay to ensure content is rendered
+    const timer = setTimeout(() => {
+      const id = location.hash.slice(1);
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [location.hash, page, post]);
+
+  // Update sidebar context with headings for mobile menu
+  useEffect(() => {
+    // Extract headings for pages with sidebar layout
+    if (page && page.layout === "sidebar") {
+      const pageHeadings = extractHeadings(page.content);
+      setHeadings(pageHeadings);
+      setActiveId(location.hash.slice(1) || undefined);
+    }
+    // Extract headings for posts with sidebar layout
+    else if (post && post.layout === "sidebar") {
+      const postHeadings = extractHeadings(post.content);
+      setHeadings(postHeadings);
+      setActiveId(location.hash.slice(1) || undefined);
+    }
+    // Clear headings when no sidebar
+    else if (page !== undefined || post !== undefined) {
+      setHeadings([]);
+      setActiveId(undefined);
+    }
+
+    // Cleanup: clear headings when leaving page
+    return () => {
+      setHeadings([]);
+      setActiveId(undefined);
+    };
+  }, [page, post, location.hash, setHeadings, setActiveId]);
 
   // Update page title for static pages
   useEffect(() => {
@@ -118,35 +197,225 @@ export default function Post() {
     };
   }, [post, page]);
 
+  // Check if we're loading a docs page - keep layout mounted to prevent flash
+  const isDocsRoute = siteConfig.docsSection?.enabled && slug;
+
   // Return null during initial load to avoid flash (Convex data arrives quickly)
+  // But for docs pages, show skeleton within DocsLayout to prevent sidebar flash
   if (page === undefined || post === undefined) {
+    if (isDocsRoute) {
+      // Keep DocsLayout mounted during loading to prevent sidebar flash
+      return (
+        <DocsLayout headings={[]} currentSlug={slug || ""}>
+          <article className="docs-article">
+            <div className="docs-article-loading">
+              <div className="docs-loading-skeleton docs-loading-title" />
+              <div className="docs-loading-skeleton docs-loading-text" />
+              <div className="docs-loading-skeleton docs-loading-text" />
+              <div className="docs-loading-skeleton docs-loading-text-short" />
+            </div>
+          </article>
+        </DocsLayout>
+      );
+    }
     return null;
   }
 
   // If it's a static page, render simplified view
   if (page) {
+    // Check if this page should use docs layout
+    if (page.docsSection && siteConfig.docsSection?.enabled) {
+      const docsHeadings = extractHeadings(page.content);
+      return (
+        <DocsLayout
+          headings={docsHeadings}
+          currentSlug={page.slug}
+          aiChatEnabled={page.aiChat}
+          pageContent={page.content}
+        >
+          <article className="docs-article">
+            <div className="docs-article-actions">
+              <CopyPageDropdown
+                title={page.title}
+                content={page.content}
+                url={`${SITE_URL}/${page.slug}`}
+                slug={page.slug}
+                description={page.excerpt}
+              />
+            </div>
+            {page.showImageAtTop && page.image && (
+              <div className="post-header-image">
+                <img
+                  src={page.image}
+                  alt={page.title}
+                  className="post-header-image-img"
+                />
+              </div>
+            )}
+            <header className="docs-article-header">
+              <h1 className="docs-article-title">{page.title}</h1>
+              {page.excerpt && (
+                <p className="docs-article-description">{page.excerpt}</p>
+              )}
+            </header>
+            <BlogPost content={page.content} slug={page.slug} pageType="page" />
+            {siteConfig.footer.enabled &&
+              (page.showFooter !== undefined
+                ? page.showFooter
+                : siteConfig.footer.showOnPages) && (
+                <Footer content={page.footer} />
+              )}
+          </article>
+        </DocsLayout>
+      );
+    }
+
+    // Extract headings for sidebar TOC (only for pages with layout: "sidebar")
+    const headings =
+      page.layout === "sidebar" ? extractHeadings(page.content) : [];
+    const hasLeftSidebar = headings.length > 0;
+    // Check if right sidebar is enabled (only when explicitly set in frontmatter)
+    const hasRightSidebar =
+      siteConfig.rightSidebar.enabled && page.rightSidebar === true;
+    const hasAnySidebar = hasLeftSidebar || hasRightSidebar;
+    // Track if only right sidebar is enabled (for centering article)
+    const hasOnlyRightSidebar = hasRightSidebar && !hasLeftSidebar;
+
     return (
-      <div className="post-page">
-        <nav className="post-nav">
-          <button onClick={() => navigate("/")} className="back-button">
-            <ArrowLeft size={16} />
-            <span>Back</span>
-          </button>
-          {/* Copy page dropdown for static pages */}
-          <CopyPageDropdown
-            title={page.title}
-            content={page.content}
-            url={window.location.href}
-          />
+      <div
+        className={`post-page ${hasAnySidebar ? "post-page-with-sidebar" : ""}`}
+      >
+        <nav
+          className={`post-nav ${hasAnySidebar ? "post-nav-with-sidebar" : ""}`}
+        >
+          {/* Hide back-button when sidebars are enabled or when used as homepage */}
+          {!hasAnySidebar && !isHomepage && (
+            <button onClick={() => navigate("/")} className="back-button">
+              <ArrowLeft size={16} />
+              <span>Back</span>
+            </button>
+          )}
+          {/* Only show CopyPageDropdown in nav if no sidebars are enabled */}
+          {!hasAnySidebar && (
+            <CopyPageDropdown
+              title={page.title}
+              content={page.content}
+              url={window.location.href}
+              slug={page.slug}
+              description={page.excerpt}
+            />
+          )}
         </nav>
 
-        <article className="post-article">
-          <header className="post-header">
-            <h1 className="post-title">{page.title}</h1>
-          </header>
+        <div
+          className={`${hasAnySidebar ? "post-content-with-sidebar" : ""} ${hasOnlyRightSidebar ? "post-content-right-sidebar-only" : ""}`}
+        >
+          {/* Left sidebar - TOC */}
+          {hasLeftSidebar && (
+            <aside className="post-sidebar-wrapper post-sidebar-left">
+              <PageSidebar
+                headings={headings}
+                activeId={location.hash.slice(1)}
+              />
+            </aside>
+          )}
 
-          <BlogPost content={page.content} />
-        </article>
+          {/* Main content */}
+          <article
+            className={`post-article ${hasAnySidebar ? "post-article-with-sidebar" : ""} ${hasOnlyRightSidebar ? "post-article-centered" : ""}`}
+          >
+            {/* Display image at top if showImageAtTop is true */}
+            {page.showImageAtTop && page.image && (
+              <div className="post-header-image">
+                <img
+                  src={page.image}
+                  alt={page.title}
+                  className="post-header-image-img"
+                />
+              </div>
+            )}
+            <header className="post-header">
+              <div className="post-title-row">
+                <h1 className="post-title">{page.title}</h1>
+                {/* Show CopyPageDropdown aligned with title when sidebars are enabled */}
+                {hasAnySidebar && (
+                  <div className="post-header-actions">
+                    <CopyPageDropdown
+                      title={page.title}
+                      content={page.content}
+                      url={window.location.href}
+                      slug={page.slug}
+                      description={page.excerpt}
+                    />
+                  </div>
+                )}
+              </div>
+              {/* Author avatar and name for pages (optional) */}
+              {(page.authorImage || page.authorName) && (
+                <div className="post-meta-header">
+                  <div className="post-author">
+                    {page.authorImage && (
+                      <img
+                        src={page.authorImage}
+                        alt={page.authorName || "Author"}
+                        className="post-author-image"
+                      />
+                    )}
+                    {page.authorName && (
+                      <Link
+                        to={`/author/${page.authorName.toLowerCase().replace(/\s+/g, "-")}`}
+                        className="post-author-name post-author-link"
+                      >
+                        {page.authorName}
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              )}
+            </header>
+
+            <BlogPost content={page.content} slug={page.slug} pageType="page" />
+
+            {/* Contact form - shown when contactForm: true in frontmatter (only if not inline) */}
+            {siteConfig.contactForm?.enabled &&
+              page.contactForm &&
+              !page.content.includes("<!-- contactform -->") && (
+                <ContactForm source={`page:${page.slug}`} />
+              )}
+
+            {/* Newsletter signup - respects frontmatter override (only if not inline) */}
+            {siteConfig.newsletter?.enabled &&
+              (page.newsletter !== undefined
+                ? page.newsletter
+                : siteConfig.newsletter.signup.posts.enabled) &&
+              !page.content.includes("<!-- newsletter -->") && (
+                <NewsletterSignup source="post" postSlug={page.slug} />
+              )}
+
+            {/* Footer - shown inside article at bottom for pages */}
+            {siteConfig.footer.enabled &&
+              (page.showFooter !== undefined
+                ? page.showFooter
+                : siteConfig.footer.showOnPages) && (
+                <Footer content={page.footer} />
+              )}
+
+            {/* Social footer - shown inside article at bottom for pages */}
+            {siteConfig.socialFooter?.enabled &&
+              (page.showSocialFooter !== undefined
+                ? page.showSocialFooter
+                : siteConfig.socialFooter.showOnPages) && <SocialFooter />}
+          </article>
+
+          {/* Right sidebar - with optional AI chat support */}
+          {hasRightSidebar && (
+            <RightSidebar
+              aiChatEnabled={page.aiChat}
+              pageContent={page.content}
+              slug={page.slug}
+            />
+          )}
+        </div>
       </div>
     );
   }
@@ -183,84 +452,292 @@ export default function Post() {
     );
   };
 
-  // Render blog post with full metadata
-  return (
-    <div className="post-page">
-      <nav className="post-nav">
-        <button onClick={() => navigate("/")} className="back-button">
-          <ArrowLeft size={16} />
-          <span>Back</span>
-        </button>
-        {/* Copy page dropdown for sharing */}
-        <CopyPageDropdown
-          title={post.title}
-          content={post.content}
-          url={window.location.href}
-        />
-      </nav>
-
-      <article className="post-article">
-        <header className="post-header">
-          <h1 className="post-title">{post.title}</h1>
-          <div className="post-meta-header">
-            <time className="post-date">
-              {format(parseISO(post.date), "MMMM yyyy")}
-            </time>
-            {post.readTime && (
-              <>
-                <span className="post-meta-separator">·</span>
-                <span className="post-read-time">{post.readTime}</span>
-              </>
-            )}
+  // Check if this post should use docs layout
+  if (post.docsSection && siteConfig.docsSection?.enabled) {
+    const docsHeadings = extractHeadings(post.content);
+    return (
+      <DocsLayout
+        headings={docsHeadings}
+        currentSlug={post.slug}
+        aiChatEnabled={post.aiChat}
+        pageContent={post.content}
+      >
+        <article className="docs-article">
+          <div className="docs-article-actions">
+            <CopyPageDropdown
+              title={post.title}
+              content={post.content}
+              url={`${SITE_URL}/${post.slug}`}
+              slug={post.slug}
+              description={post.description}
+              date={post.date}
+              tags={post.tags}
+            />
           </div>
-          {post.description && (
-            <p className="post-description">{post.description}</p>
-          )}
-        </header>
-
-        <BlogPost content={post.content} />
-
-        <footer className="post-footer">
-          <div className="post-share">
-            <button
-              onClick={handleCopyLink}
-              className="share-button"
-              aria-label="Copy link"
-            >
-              <LinkIcon size={16} />
-              <span>{copied ? "Copied!" : "Copy link"}</span>
-            </button>
-            <button
-              onClick={handleShareTwitter}
-              className="share-button"
-              aria-label="Share on Twitter"
-            >
-              <Twitter size={16} />
-              <span>Tweet</span>
-            </button>
-            <a
-              href="/rss.xml"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="share-button"
-              aria-label="RSS Feed"
-            >
-              <Rss size={16} />
-              <span>RSS</span>
-            </a>
-          </div>
-
-          {post.tags && post.tags.length > 0 && (
-            <div className="post-tags">
-              {post.tags.map((tag) => (
-                <span key={tag} className="post-tag">
-                  {tag}
-                </span>
-              ))}
+          {post.showImageAtTop && post.image && (
+            <div className="post-header-image">
+              <img
+                src={post.image}
+                alt={post.title}
+                className="post-header-image-img"
+              />
             </div>
           )}
-        </footer>
-      </article>
+          <header className="docs-article-header">
+            <h1 className="docs-article-title">{post.title}</h1>
+            {post.description && (
+              <p className="docs-article-description">{post.description}</p>
+            )}
+          </header>
+          <BlogPost content={post.content} slug={post.slug} pageType="post" />
+          {siteConfig.footer.enabled &&
+            (post.showFooter !== undefined
+              ? post.showFooter
+              : siteConfig.footer.showOnPosts) && (
+              <Footer content={post.footer} />
+            )}
+        </article>
+      </DocsLayout>
+    );
+  }
+
+  // Extract headings for sidebar TOC (only for posts with layout: "sidebar")
+  const headings =
+    post?.layout === "sidebar" ? extractHeadings(post.content) : [];
+  const hasLeftSidebar = headings.length > 0;
+  // Check if right sidebar is enabled (only when explicitly set in frontmatter)
+  const hasRightSidebar =
+    siteConfig.rightSidebar.enabled && post.rightSidebar === true;
+  const hasAnySidebar = hasLeftSidebar || hasRightSidebar;
+  // Track if only right sidebar is enabled (for centering article)
+  const hasOnlyRightSidebar = hasRightSidebar && !hasLeftSidebar;
+
+  // Render blog post with full metadata
+  return (
+    <div
+      className={`post-page ${hasAnySidebar ? "post-page-with-sidebar" : ""}`}
+    >
+      <nav
+        className={`post-nav ${hasAnySidebar ? "post-nav-with-sidebar" : ""}`}
+      >
+        {/* Hide back-button when sidebars are enabled or when used as homepage */}
+        {!hasAnySidebar && !isHomepage && (
+          <button onClick={() => navigate("/")} className="back-button">
+            <ArrowLeft size={16} />
+            <span>Back</span>
+          </button>
+        )}
+        {/* Only show CopyPageDropdown in nav if no sidebars are enabled */}
+        {!hasAnySidebar && (
+          <CopyPageDropdown
+            title={post.title}
+            content={post.content}
+            url={window.location.href}
+            slug={post.slug}
+            description={post.description}
+            date={post.date}
+            tags={post.tags}
+            readTime={post.readTime}
+          />
+        )}
+      </nav>
+
+      <div
+        className={`${hasAnySidebar ? "post-content-with-sidebar" : ""} ${hasOnlyRightSidebar ? "post-content-right-sidebar-only" : ""}`}
+      >
+        {/* Left sidebar - TOC */}
+        {hasLeftSidebar && (
+          <aside className="post-sidebar-wrapper post-sidebar-left">
+            <PageSidebar
+              headings={headings}
+              activeId={location.hash.slice(1)}
+            />
+          </aside>
+        )}
+
+        <article
+          className={`post-article ${hasAnySidebar ? "post-article-with-sidebar" : ""} ${hasOnlyRightSidebar ? "post-article-centered" : ""}`}
+        >
+          {/* Display image at top if showImageAtTop is true */}
+          {post.showImageAtTop && post.image && (
+            <div className="post-header-image">
+              <img
+                src={post.image}
+                alt={post.title}
+                className="post-header-image-img"
+              />
+            </div>
+          )}
+          <header className="post-header">
+            <div className="post-title-row">
+              <h1 className="post-title">{post.title}</h1>
+              {/* Show CopyPageDropdown aligned with title when sidebars are enabled */}
+              {hasAnySidebar && (
+                <div className="post-header-actions">
+                  <CopyPageDropdown
+                    title={post.title}
+                    content={post.content}
+                    url={window.location.href}
+                    slug={post.slug}
+                    description={post.description}
+                    date={post.date}
+                    tags={post.tags}
+                    readTime={post.readTime}
+                  />
+                </div>
+              )}
+            </div>
+            <div className="post-meta-header">
+              {/* Author avatar and name (optional) */}
+              {(post.authorImage || post.authorName) && (
+                <div className="post-author">
+                  {post.authorImage && (
+                    <img
+                      src={post.authorImage}
+                      alt={post.authorName || "Author"}
+                      className="post-author-image"
+                    />
+                  )}
+                  {post.authorName && (
+                    <Link
+                      to={`/author/${post.authorName.toLowerCase().replace(/\s+/g, "-")}`}
+                      className="post-author-name post-author-link"
+                    >
+                      {post.authorName}
+                    </Link>
+                  )}
+                  <span className="post-meta-separator">·</span>
+                </div>
+              )}
+              <time className="post-date">
+                {format(parseISO(post.date), "MMMM yyyy")}
+              </time>
+              {post.readTime && (
+                <>
+                  <span className="post-meta-separator">·</span>
+                  <span className="post-read-time">{post.readTime}</span>
+                </>
+              )}
+            </div>
+            {post.description && (
+              <p className="post-description">{post.description}</p>
+            )}
+          </header>
+
+          <BlogPost content={post.content} slug={post.slug} pageType="post" />
+
+          <footer className="post-footer">
+            <div className="post-share">
+              <button
+                onClick={handleCopyLink}
+                className="share-button"
+                aria-label="Copy link"
+              >
+                <LinkIcon size={16} />
+                <span>{copied ? "Copied!" : "Copy link"}</span>
+              </button>
+              <button
+                onClick={handleShareTwitter}
+                className="share-button"
+                aria-label="Share on Twitter"
+              >
+                <Twitter size={16} />
+                <span>Tweet</span>
+              </button>
+              <a
+                href="/rss.xml"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="share-button"
+                aria-label="RSS Feed"
+              >
+                <Rss size={16} />
+                <span>RSS</span>
+              </a>
+            </div>
+
+            {post.tags && post.tags.length > 0 && (
+              <div className="post-tags">
+                <Tag size={14} className="post-tags-icon" aria-hidden="true" />
+                {post.tags.map((tag) => (
+                  <Link
+                    key={tag}
+                    to={`/tags/${encodeURIComponent(tag.toLowerCase())}`}
+                    className="post-tag post-tag-link"
+                  >
+                    {tag}
+                  </Link>
+                ))}
+              </div>
+            )}
+
+            {/* Related posts section - only shown for blog posts with shared tags */}
+            {relatedPosts && relatedPosts.length > 0 && (
+              <div className="related-posts">
+                <h3 className="related-posts-title">Related Posts</h3>
+                <ul className="related-posts-list">
+                  {relatedPosts.map((relatedPost) => (
+                    <li key={relatedPost.slug} className="related-post-item">
+                      <Link
+                        to={`/${relatedPost.slug}`}
+                        className="related-post-link"
+                      >
+                        <span className="related-post-title">
+                          {relatedPost.title}
+                        </span>
+                        {relatedPost.readTime && (
+                          <span className="related-post-meta">
+                            {relatedPost.readTime}
+                          </span>
+                        )}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {/* Newsletter signup - respects frontmatter override (only if not inline) */}
+            {siteConfig.newsletter?.enabled &&
+              (post.newsletter !== undefined
+                ? post.newsletter
+                : siteConfig.newsletter.signup.posts.enabled) &&
+              !post.content.includes("<!-- newsletter -->") && (
+                <NewsletterSignup source="post" postSlug={post.slug} />
+              )}
+
+            {/* Contact form - shown when contactForm: true in frontmatter (only if not inline) */}
+            {siteConfig.contactForm?.enabled &&
+              post.contactForm &&
+              !post.content.includes("<!-- contactform -->") && (
+                <ContactForm source={`post:${post.slug}`} />
+              )}
+          </footer>
+
+          {/* Footer - shown inside article at bottom for posts */}
+          {siteConfig.footer.enabled &&
+            (post.showFooter !== undefined
+              ? post.showFooter
+              : siteConfig.footer.showOnPosts) && (
+              <Footer content={post.footer} />
+            )}
+
+          {/* Social footer - shown inside article at bottom for posts */}
+          {siteConfig.socialFooter?.enabled &&
+            (post.showSocialFooter !== undefined
+              ? post.showSocialFooter
+              : siteConfig.socialFooter.showOnPosts) && <SocialFooter />}
+        </article>
+
+        {/* Right sidebar - with optional AI chat support */}
+        {hasRightSidebar && (
+          <RightSidebar
+            aiChatEnabled={post.aiChat}
+            pageContent={post.content}
+            slug={post.slug}
+          />
+        )}
+      </div>
     </div>
   );
 }

@@ -28,5 +28,13 @@ dist-ssr
 .env.local
 .env.*.local
 
-# Cursor rules
-.cursor/rules/write.mdc
+# Fork configuration (user-specific)
+fork-config.json
+
+
+
+
+
+# PRD files
+prds/metadataforsubs.md
+prds/addchattoapp.md

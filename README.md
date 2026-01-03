@@ -1,8 +1,86 @@
-# markdown "sync" site
+# markdown "sync" framework
 
-A minimalist markdown site built with React, Convex, and Vite. Optimized for SEO, AI agents, and LLM discovery.
+![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue.svg)
+![React](https://img.shields.io/badge/React-18-61dafb.svg)
+![Convex](https://img.shields.io/badge/Convex-enabled-ff6b6b.svg)
+![Netlify](https://img.shields.io/badge/Netlify-hosted-00C7B7.svg)
+
+An open-source publishing framework built for AI agents and developers to ship websites, docs, or blogs. Write markdown, sync from the terminal. Your content is instantly available to browsers, LLMs, and AI agents. Built on Convex and Netlify.
+
+Write markdown locally, run `npm run sync` (dev) or `npm run sync:prod` (production), and content appears instantly across all connected browsers. Built with React, Convex, and Vite. Optimized for AEO, GEO, and LLM discovery.
 
 **How publishing works:** Write posts in markdown, run `npm run sync` for development or `npm run sync:prod` for production, and they appear on your live site immediately. No rebuild or redeploy needed. Convex handles real-time data sync, so all connected browsers update automatically.
+
+**Sync commands:**
+
+**Development:**
+
+- `npm run sync` - Sync markdown content
+- `npm run sync:discovery` - Update discovery files (AGENTS.md, llms.txt)
+- `npm run sync:all` - Sync content + discovery files together
+
+**Production:**
+
+- `npm run sync:prod` - Sync markdown content
+- `npm run sync:discovery:prod` - Update discovery files
+- `npm run sync:all:prod` - Sync content + discovery files together
+
+**How versioning works:** Markdown files live in `content/blog/` and `content/pages/`. These are regular files in your git repo. Commit changes, review diffs, roll back like any codebase. The sync command pushes content to Convex.
+
+```bash
+# Edit, commit, sync
+git add content/blog/my-post.md
+git commit -m "Update post"
+npm run sync        # dev
+npm run sync:prod   # production
+```
+
+**MCP Server:** The site includes an HTTP-based Model Context Protocol (MCP) server at `/mcp` for AI tool integration. Connect Cursor, Claude Desktop, and other MCP clients to access blog content programmatically. See [How to Use the MCP Server](https://www.markdown.fast/how-to-use-mcp-server) for setup instructions.
+
+## Documentation
+
+- **[Setup Guide](https://www.markdown.fast/setup-guide)** - Complete fork and deployment guide
+- **[Configuration Guide](https://www.markdown.fast/fork-configuration-guide)** - Automated or manual fork setup
+- **[Full Documentation](https://www.markdown.fast/docs)** - Docs for all features and configuration
+
+### AI Development Tools
+
+The project includes documentation optimized for AI coding assistants:
+
+- **CLAUDE.md** - Project instructions for Claude Code CLI with workflows, commands, and conventions
+- **AGENTS.md** - General AI agent instructions for understanding the codebase structure
+- **.claude/skills/** - Focused skill documentation:
+  - `frontmatter.md` - Complete frontmatter syntax and all field options
+  - `convex.md` - Convex patterns specific to this app
+  - `sync.md` - How sync commands work and content flow
+
+These files are automatically updated during `npm run sync:discovery` with current site statistics.
+
+## Fork Configuration
+
+After forking this project, you have two options to configure your site:
+
+### Option 1: Automated (Recommended)
+
+Run a single command to configure all files automatically:
+
+```bash
+# Copy the example config
+cp fork-config.json.example fork-config.json
+
+# Edit with your site information
+# Open fork-config.json and update the values
+
+# Apply all changes
+npm run configure
+```
+
+This updates all 11 configuration files in one step.
+
+### Option 2: Manual
+
+Follow the step-by-step guide in `FORK_CONFIG.md` to update each file manually. This guide includes code snippets and an AI agent prompt for assistance.
 
 ## Features
 
@@ -11,8 +89,25 @@ A minimalist markdown site built with React, Convex, and Vite. Optimized for SEO
 - Four theme options: Dark, Light, Tan (default), Cloud
 - Real-time data with Convex
 - Fully responsive design
-- Real-time analytics at `/stats`
+- Real-time analytics at `/stats` with visitor map
 - Full text search with Command+K shortcut
+- Featured section with list/card view toggle
+- Logo gallery with continuous marquee scroll or static grid
+- GitHub contributions graph with year navigation
+- Static raw markdown files at `/raw/{slug}.md`
+- Dedicated blog page with configurable navigation order and featured layout
+- Markdown writing page at `/write` with frontmatter reference
+- AI Agent chat (powered by Anthropic Claude) on Write page and optionally in right sidebar
+- Tag pages at `/tags/[tag]` with view mode toggle
+- Related posts based on shared tags
+- Footer component with markdown support and images
+- Social footer with customizable social links and copyright
+- Right sidebar for CopyPageDropdown and AI chat
+- Contact forms on any page or post
+- Newsletter subscriptions and admin UI
+- Homepage post limit with optional "read more" link
+- Blog page featured layout with hero post
+- Show image at top of posts/pages
 
 ### SEO and Discovery
 
@@ -27,8 +122,77 @@ A minimalist markdown site built with React, Convex, and Vite. Optimized for SEO
 
 - `/api/posts` - JSON list of all posts for agents
 - `/api/post?slug=xxx` - Single post JSON or markdown
+- `/api/export` - Batch export all posts with full content
+- `/raw/{slug}.md` - Static raw markdown files for each post and page
 - `/rss-full.xml` - Full content RSS for LLM ingestion
-- Copy Page dropdown for sharing to ChatGPT, Claude
+- `/.well-known/ai-plugin.json` - AI plugin manifest
+- `/openapi.yaml` - OpenAPI 3.0 specification
+- Copy Page dropdown for sharing to ChatGPT, Claude, Perplexity (uses raw markdown URLs for better AI parsing)
+
+### MCP Server
+
+The site includes an HTTP-based Model Context Protocol (MCP) server for AI tool integration. It allows AI assistants like Cursor and Claude Desktop to access blog content programmatically.
+
+**Endpoint:** `https://www.markdown.fast/mcp`
+
+**Features:**
+
+- 24/7 availability via Netlify Edge Functions (no local machine required)
+- Public access with rate limiting (50 req/min per IP)
+- Optional API key for higher limits (1000 req/min)
+- Seven tools: `list_posts`, `get_post`, `list_pages`, `get_page`, `get_homepage`, `search_content`, `export_all`
+
+**Configuration:**
+
+Add to your Cursor config (`~/.cursor/mcp.json`):
+
+```json
+{
+  "mcpServers": {
+    "markdown-fast": {
+      "url": "https://www.markdown.fast/mcp"
+    }
+  }
+}
+```
+
+**For forks:** Set `VITE_CONVEX_URL` in Netlify environment variables. Optionally set `MCP_API_KEY` for authenticated access.
+
+See [How to Use the MCP Server](https://www.markdown.fast/how-to-use-mcp-server) for full documentation.
+
+### Content Import
+
+- Import external URLs as markdown posts using Firecrawl
+- Run `npm run import <url>` to scrape and create draft posts locally
+- Then sync to dev or prod with `npm run sync` or `npm run sync:prod`
+
+### Dashboard
+
+The framework includes a centralized dashboard at `/dashboard` for managing content and configuring your site. Features include:
+
+- Content management: Edit posts and pages with live preview
+- Sync commands: Run sync operations from the browser
+- Site configuration: Configure all settings via UI
+- Newsletter management: Integrated subscriber and email management
+- AI Agent: Writing assistance powered by Claude
+- Analytics: Real-time stats dashboard
+
+WorkOS authentication is recommended so no one has access to your dashboard if it's enabled. Configure it in `siteConfig.ts` to protect the dashboard in production. See [How to use the Markdown sync dashboard](https://www.markdown.fast/how-to-use-the-markdown-sync-dashboard) and [How to setup WorkOS](https://www.markdown.fast/how-to-setup-workos) for details.
+
+### Newsletter and Email
+
+The framework includes AgentMail integration for newsletter subscriptions and contact forms. Features include:
+
+- Newsletter subscriptions and sending
+- Contact forms on any post or page
+- Automated weekly digests (Sundays 9am UTC)
+- Developer notifications (new subscriber alerts, weekly stats summaries)
+- Admin UI for subscriber management at `/newsletter-admin`
+- CLI tools for sending newsletters and stats
+- Custom email composition with markdown support
+- Email statistics dashboard
+
+See the [AgentMail setup guide](https://www.markdown.fast/blog/how-to-use-agentmail) for configuration instructions.
 
 ## Getting Started
 
@@ -92,58 +256,50 @@ published: true
 tags: ["tag1", "tag2"]
 readTime: "5 min read"
 image: "/images/my-header.png"
+excerpt: "Short text for featured cards"
 ---
 
 Your markdown content here...
 ```
 
-## Images
+## Logo Gallery
 
-### Open Graph Images
+The homepage includes a scrolling logo gallery with sample logos. Configure in `siteConfig`:
 
-Add an `image` field to frontmatter for social media previews:
-
-```yaml
-image: "/images/my-header.png"
-```
-
-Recommended dimensions: 1200x630 pixels. Images can be local (`/images/...`) or external URLs.
-
-### Inline Images
-
-Add images in markdown content:
-
-```markdown
-![Alt text description](/images/screenshot.png)
-```
-
-Place image files in `public/images/`. The alt text displays as a caption.
-
-### Site Logo
-
-Edit `src/pages/Home.tsx` to set your site logo:
+### Disable the gallery
 
 ```typescript
-const siteConfig = {
-  logo: "/images/logo.svg", // Set to null to hide
+logoGallery: {
+  enabled: false,
   // ...
-};
+},
 ```
 
-Replace `public/images/logo.svg` with your own logo file.
+## GitHub Contributions Graph
 
-### Favicon
-
-Replace `public/favicon.svg` with your own icon. The default is a rounded square with the letter "m". Edit the SVG to change the letter or style.
-
-### Default Open Graph Image
-
-The default OG image is used when posts do not have an `image` field. Replace `public/images/og-default.svg` with your own image (1200x630 recommended).
-
-Update the reference in `src/pages/Post.tsx`:
+Display your GitHub contribution activity on the homepage. Configure in `src/config/siteConfig.ts`:
 
 ```typescript
-const DEFAULT_OG_IMAGE = "/images/og-default.svg";
+gitHubContributions: {
+  enabled: true,           // Set to false to hide
+  username: "yourusername", // Your GitHub username
+  showYearNavigation: true, // Show arrows to navigate between years
+  linkToProfile: true,      // Click graph to open GitHub profile
+  title: "GitHub Activity", // Optional title above the graph
+},
+```
+
+## Visitor Map
+
+Display real-time visitor locations on a world map on the stats page. Uses Netlify's built-in geo detection (no third-party API needed). Privacy friendly: only stores city, country, and coordinates. No IP addresses stored.
+
+Configure in `src/config/siteConfig.ts`:
+
+```typescript
+visitorMap: {
+  enabled: true,        // Set to false to hide the visitor map
+  title: "Live Visitors", // Optional title above the map
+},
 ```
 
 ## Syncing Posts
@@ -161,10 +317,17 @@ Both files are gitignored. Each developer creates their own.
 
 ### Sync Commands
 
-| Command             | Target      | When to use                 |
-| ------------------- | ----------- | --------------------------- |
-| `npm run sync`      | Development | Local testing, new posts    |
-| `npm run sync:prod` | Production  | Deploy content to live site |
+**Development:**
+
+- `npm run sync` - Sync markdown content to development Convex
+- `npm run sync:discovery` - Update discovery files (AGENTS.md, llms.txt) with development data
+- `npm run sync:all` - Sync content + discovery files together
+
+**Production:**
+
+- `npm run sync:prod` - Sync markdown content to production Convex
+- `npm run sync:discovery:prod` - Update discovery files with production data
+- `npm run sync:all:prod` - Sync content + discovery files together
 
 **Development sync:**
 
@@ -244,15 +407,20 @@ markdown-site/
 
 ## Scripts Reference
 
-| Script                | Description                                  |
-| --------------------- | -------------------------------------------- |
-| `npm run dev`         | Start Vite dev server                        |
-| `npm run dev:convex`  | Start Convex dev backend                     |
-| `npm run sync`        | Sync posts to dev deployment                 |
-| `npm run sync:prod`   | Sync posts to production deployment          |
-| `npm run build`       | Build for production                         |
-| `npm run deploy`      | Sync + build (for manual deploys)            |
-| `npm run deploy:prod` | Deploy Convex functions + sync to production |
+| Script                        | Description                                    |
+| ----------------------------- | ---------------------------------------------- |
+| `npm run dev`                 | Start Vite dev server                          |
+| `npm run dev:convex`          | Start Convex dev backend                       |
+| `npm run sync`                | Sync posts to dev deployment                   |
+| `npm run sync:prod`           | Sync posts to production deployment            |
+| `npm run sync:discovery`      | Update discovery files (development)           |
+| `npm run sync:discovery:prod` | Update discovery files (production)            |
+| `npm run sync:all`            | Sync content + discovery (development)         |
+| `npm run sync:all:prod`       | Sync content + discovery (production)          |
+| `npm run import`              | Import URL as local markdown draft (then sync) |
+| `npm run build`               | Build for production                           |
+| `npm run deploy`              | Sync + build (for manual deploys)              |
+| `npm run deploy:prod`         | Deploy Convex functions + sync to production   |
 
 ## Tech Stack
 
@@ -301,35 +469,52 @@ How it works:
 
 ## API Endpoints
 
-| Endpoint                       | Description                     |
-| ------------------------------ | ------------------------------- |
-| `/stats`                       | Real-time site analytics        |
-| `/rss.xml`                     | RSS feed with post descriptions |
-| `/rss-full.xml`                | RSS feed with full post content |
-| `/sitemap.xml`                 | Dynamic XML sitemap             |
-| `/api/posts`                   | JSON list of all posts          |
-| `/api/post?slug=xxx`           | Single post as JSON             |
-| `/api/post?slug=xxx&format=md` | Single post as markdown         |
-| `/meta/post?slug=xxx`          | Open Graph HTML for crawlers    |
+| Endpoint                       | Description                         |
+| ------------------------------ | ----------------------------------- |
+| `/stats`                       | Real-time site analytics            |
+| `/rss.xml`                     | RSS feed with post descriptions     |
+| `/rss-full.xml`                | RSS feed with full post content     |
+| `/sitemap.xml`                 | Dynamic XML sitemap                 |
+| `/api/posts`                   | JSON list of all posts              |
+| `/api/post?slug=xxx`           | Single post as JSON                 |
+| `/api/post?slug=xxx&format=md` | Single post as markdown             |
+| `/api/export`                  | Batch export all posts with content |
+| `/meta/post?slug=xxx`          | Open Graph HTML for crawlers        |
+| `/.well-known/ai-plugin.json`  | AI plugin manifest                  |
+| `/openapi.yaml`                | OpenAPI 3.0 specification           |
+| `/llms.txt`                    | AI agent discovery                  |
 
-## How Blog Post Slugs Work
+## Import External Content
 
-Slugs are defined in the frontmatter of each markdown file:
+Use Firecrawl to import articles from external URLs as markdown posts:
 
-```markdown
----
-slug: "my-post-slug"
----
+```bash
+npm run import https://example.com/article
 ```
 
-The slug becomes the URL path: `yourdomain.com/my-post-slug`
+This will:
 
-Rules:
+1. Scrape the URL using Firecrawl API
+2. Convert to clean markdown
+3. Create a draft post in `content/blog/` locally
+4. Add frontmatter with title, description, and today's date
 
-- Slugs must be unique across all posts
-- Use lowercase letters, numbers, and hyphens
-- The sync script reads the `slug` field from frontmatter
-- Posts are queried by slug using a Convex index
+**Setup:**
+
+1. Get an API key from [firecrawl.dev](https://firecrawl.dev)
+2. Add to `.env.local`:
+
+```
+FIRECRAWL_API_KEY=fc-your-api-key
+```
+
+**Why no `npm run import:prod`?** The import command only creates local markdown files. It does not interact with Convex. After importing, sync to your target environment:
+
+- `npm run sync` for development
+- `npm run sync:prod` for production
+- Use `npm run sync:all` or `npm run sync:all:prod` to sync content and update discovery files together
+
+Imported posts are created as drafts (`published: false`). Review, edit, set `published: true`, then sync.
 
 ## Theme Configuration
 
@@ -350,28 +535,58 @@ const DEFAULT_THEME: Theme = "tan"; // Change to "dark", "light", or "cloud"
 
 The blog uses a serif font (New York) by default. To switch fonts, edit `src/styles/global.css`:
 
-```css
-body {
-  /* Sans-serif option */
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
-    Cantarell, sans-serif;
+### Font Sizes
 
-  /* Serif option (default) */
-  font-family:
-    "New York",
-    -apple-system-ui-serif,
-    ui-serif,
-    Georgia,
-    Cambria,
-    "Times New Roman",
-    Times,
-    serif;
-}
-```
+All font sizes use CSS variables defined in `:root`. Customize sizes by editing the variables:
 
-Replace the `font-family` property with your preferred font stack.
+## Write Page
+
+A public markdown writing page at `/write` (not linked in navigation).
+
+Access directly at `yourdomain.com/write`. Content is stored in localStorage only (not synced to database). Use it to draft posts, then copy the content to a markdown file in `content/blog/` or `content/pages/` and run `npm run sync`.
+
+**Features:**
+
+- Three-column Cursor docs-style layout
+- Content type selector (Blog Post or Page) with dynamic frontmatter templates
+- Frontmatter field reference with individual copy buttons
+- Font switcher (Serif/Sans-serif/Monospace)
+- Theme toggle matching site themes
+- Word, line, and character counts
+- localStorage persistence for content, type, and font preference
+
+**AI Agent mode:** When `siteConfig.aiChat.enabledOnWritePage` is enabled, a toggle button appears in the Actions section. Clicking it replaces the textarea with the AI Agent chat interface. The page title changes to "Agent" when in chat mode. Requires `ANTHROPIC_API_KEY` environment variable in Convex.
+
+## AI Agent Chat
+
+The site includes an AI writing assistant (Agent) powered by Anthropic Claude API. Agent can be enabled in two places:
+
+**1. Write page (`/write`):** Enable via `siteConfig.aiChat.enabledOnWritePage`. Toggle replaces textarea with Agent chat interface.
+
+**2. Right sidebar on posts/pages:** Enable via `aiChat: true` frontmatter field (requires `rightSidebar: true` and `siteConfig.aiChat.enabledOnContent: true`).
+
+**Environment variables required:**
+
+- `ANTHROPIC_API_KEY` (required): Your Anthropic API key
+- `CLAUDE_PROMPT_STYLE`, `CLAUDE_PROMPT_COMMUNITY`, `CLAUDE_PROMPT_RULES` (optional): Split system prompts
+- `CLAUDE_SYSTEM_PROMPT` (optional): Single system prompt fallback
+
+Set these in [Convex Dashboard](https://dashboard.convex.dev) > Settings > Environment Variables.
+
+**Features:**
+
+- Per-page chat history stored in Convex (per-session, per-context)
+- Page content can be provided as context for AI responses
+- Markdown rendering for AI responses with copy functionality
+- User-friendly error messages when API key is not configured
+- Anonymous session authentication using localStorage
+- Chat history limited to last 20 messages for efficiency
+- System prompt configurable via environment variables (split or single prompt)
 
 ## Source
 
 Fork this project: [github.com/waynesutton/markdown-site](https://github.com/waynesutton/markdown-site)
+
+## License
+
+This project is licensed under the [MIT License](https://github.com/waynesutton/markdown-site/blob/main/LICENSE).

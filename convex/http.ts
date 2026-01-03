@@ -5,9 +5,9 @@ import { rssFeed, rssFullFeed } from "./rss";
 
 const http = httpRouter();
 
-// Site configuration
-const SITE_URL = process.env.SITE_URL || "https://markdowncms.netlify.app";
-const SITE_NAME = "Markdown Site";
+// Site configuration - update these for your site (or run npm run configure)
+const SITE_URL = process.env.SITE_URL || "https://www.markdown.fast";
+const SITE_NAME = "markdown sync framework";
 
 // RSS feed endpoint (descriptions only)
 http.route({
@@ -23,12 +23,15 @@ http.route({
   handler: rssFullFeed,
 });
 
-// Sitemap.xml endpoint for search engines
+// Sitemap.xml endpoint for search engines (includes posts, pages, and tag pages)
 http.route({
   path: "/sitemap.xml",
   method: "GET",
   handler: httpAction(async (ctx) => {
     const posts = await ctx.runQuery(api.posts.getAllPosts);
+    const pages = await ctx.runQuery(api.pages.getAllPages);
+    const tags = await ctx.runQuery(api.posts.getAllTags);
+    const authors = await ctx.runQuery(api.posts.getAllAuthors);
 
     const urls = [
       // Homepage
@@ -39,11 +42,35 @@ http.route({
   </url>`,
       // All posts
       ...posts.map(
-        (post) => `  <url>
+        (post: { slug: string; date: string }) => `  <url>
     <loc>${SITE_URL}/${post.slug}</loc>
     <lastmod>${post.date}</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>`,
+      ),
+      // All pages
+      ...pages.map(
+        (page: { slug: string }) => `  <url>
+    <loc>${SITE_URL}/${page.slug}</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>`,
+      ),
+      // All tag pages
+      ...tags.map(
+        (tagInfo: { tag: string }) => `  <url>
+    <loc>${SITE_URL}/tags/${encodeURIComponent(tagInfo.tag.toLowerCase())}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
+  </url>`,
+      ),
+      // All author pages
+      ...authors.map(
+        (author: { slug: string }) => `  <url>
+    <loc>${SITE_URL}/author/${encodeURIComponent(author.slug)}</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.6</priority>
   </url>`,
       ),
     ];
@@ -72,8 +99,9 @@ http.route({
     const response = {
       site: SITE_NAME,
       url: SITE_URL,
-      description: "Developer and writer. Building with Convex and AI.",
-      posts: posts.map((post) => ({
+      description:
+        "An open-source publishing framework built for AI agents and developers to ship websites, docs, or blogs. Write markdown, sync from the terminal. Your content is instantly available to browsers, LLMs, and AI agents. Built on Convex and Netlify.",
+      posts: posts.map((post: { title: string; slug: string; description: string; date: string; readTime?: string; tags: string[] }) => ({
         title: post.title,
         slug: post.slug,
         description: post.description,
@@ -165,6 +193,52 @@ ${post.content}`;
   }),
 });
 
+// API endpoint: Export all posts with full content (batch for LLMs)
+http.route({
+  path: "/api/export",
+  method: "GET",
+  handler: httpAction(async (ctx) => {
+    const posts = await ctx.runQuery(api.posts.getAllPosts);
+
+    // Fetch full content for each post
+    const fullPosts = await Promise.all(
+      posts.map(async (post: { title: string; slug: string; description: string; date: string; readTime?: string; tags: string[] }) => {
+        const fullPost = await ctx.runQuery(api.posts.getPostBySlug, {
+          slug: post.slug,
+        });
+        return {
+          title: post.title,
+          slug: post.slug,
+          description: post.description,
+          date: post.date,
+          readTime: post.readTime,
+          tags: post.tags,
+          url: `${SITE_URL}/${post.slug}`,
+          content: fullPost?.content || "",
+        };
+      }),
+    );
+
+    const response = {
+      site: SITE_NAME,
+      url: SITE_URL,
+      description:
+        "An open-source publishing framework built for AI agents and developers to ship websites, docs, or blogs. Write markdown, sync from the terminal. Your content is instantly available to browsers, LLMs, and AI agents. Built on Convex and Netlify.",
+      exportedAt: new Date().toISOString(),
+      totalPosts: fullPosts.length,
+      posts: fullPosts,
+    };
+
+    return new Response(JSON.stringify(response, null, 2), {
+      headers: {
+        "Content-Type": "application/json; charset=utf-8",
+        "Cache-Control": "public, max-age=300, s-maxage=600",
+        "Access-Control-Allow-Origin": "*",
+      },
+    });
+  }),
+});
+
 // Escape HTML characters to prevent XSS
 function escapeHtml(text: string): string {
   return text
@@ -175,21 +249,34 @@ function escapeHtml(text: string): string {
     .replace(/'/g, "&#39;");
 }
 
-// Generate Open Graph HTML for a post
-function generatePostMetaHtml(post: {
+// Generate Open Graph HTML for a post or page
+function generateMetaHtml(content: {
   title: string;
   description: string;
   slug: string;
-  date: string;
+  date?: string;
   readTime?: string;
+  image?: string;
+  type?: "post" | "page";
 }): string {
-  const siteUrl = process.env.SITE_URL || "https://your-blog.netlify.app";
-  const siteName = "Wayne Sutton";
-  const defaultImage = `${siteUrl}/og-image.png`;
-  const canonicalUrl = `${siteUrl}/${post.slug}`;
+  const siteUrl = process.env.SITE_URL || "https://markdown.fast";
+  const siteName = "markdown sync framework";
+  const defaultImage = `${siteUrl}/images/og-default.svg`;
+  const canonicalUrl = `${siteUrl}/${content.slug}`;
 
-  const safeTitle = escapeHtml(post.title);
-  const safeDescription = escapeHtml(post.description);
+  // Resolve image URL: use post image if available, otherwise default
+  let ogImage = defaultImage;
+  if (content.image) {
+    // Handle both absolute URLs and relative paths
+    ogImage = content.image.startsWith("http")
+      ? content.image
+      : `${siteUrl}${content.image}`;
+  }
+
+  const safeTitle = escapeHtml(content.title);
+  const safeDescription = escapeHtml(content.description);
+  const contentType = content.type || "post";
+  const ogType = contentType === "post" ? "article" : "website";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -205,17 +292,21 @@ function generatePostMetaHtml(post: {
   <!-- Open Graph -->
   <meta property="og:title" content="${safeTitle}">
   <meta property="og:description" content="${safeDescription}">
-  <meta property="og:image" content="${defaultImage}">
+  <meta property="og:image" content="${ogImage}">
   <meta property="og:url" content="${canonicalUrl}">
-  <meta property="og:type" content="article">
-  <meta property="og:site_name" content="${siteName}">
-  <meta property="article:published_time" content="${post.date}">
+  <meta property="og:type" content="${ogType}">
+  <meta property="og:site_name" content="${siteName}">${
+    content.date
+      ? `
+  <meta property="article:published_time" content="${content.date}">`
+      : ""
+  }
   
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="${safeTitle}">
   <meta name="twitter:description" content="${safeDescription}">
-  <meta name="twitter:image" content="${defaultImage}">
+  <meta name="twitter:image" content="${ogImage}">
   
   <!-- Redirect to actual page after a brief delay for crawlers -->
   <script>
@@ -226,14 +317,18 @@ function generatePostMetaHtml(post: {
 </head>
 <body style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 680px; margin: 50px auto; padding: 20px; color: #111;">
   <h1 style="font-size: 32px; margin-bottom: 16px;">${safeTitle}</h1>
-  <p style="color: #666; margin-bottom: 24px;">${safeDescription}</p>
-  <p style="font-size: 14px; color: #999;">${post.date}${post.readTime ? ` · ${post.readTime}` : ""}</p>
-  <p style="margin-top: 24px;"><small>Redirecting to full article...</small></p>
+  <p style="color: #666; margin-bottom: 24px;">${safeDescription}</p>${
+    content.date
+      ? `
+  <p style="font-size: 14px; color: #999;">${content.date}${content.readTime ? ` · ${content.readTime}` : ""}</p>`
+      : ""
+  }
+  <p style="margin-top: 24px;"><small>Redirecting to full ${contentType}...</small></p>
 </body>
 </html>`;
 }
 
-// HTTP endpoint for Open Graph metadata
+// HTTP endpoint for Open Graph metadata (supports both posts and pages)
 http.route({
   path: "/meta/post",
   method: "GET",
@@ -246,27 +341,52 @@ http.route({
     }
 
     try {
+      // First try to find a post
       const post = await ctx.runQuery(api.posts.getPostBySlug, { slug });
 
-      if (!post) {
-        return new Response("Post not found", { status: 404 });
+      if (post) {
+        const html = generateMetaHtml({
+          title: post.title,
+          description: post.description,
+          slug: post.slug,
+          date: post.date,
+          readTime: post.readTime,
+          image: post.image,
+          type: "post",
+        });
+
+        return new Response(html, {
+          headers: {
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control":
+              "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
+          },
+        });
       }
 
-      const html = generatePostMetaHtml({
-        title: post.title,
-        description: post.description,
-        slug: post.slug,
-        date: post.date,
-        readTime: post.readTime,
-      });
+      // If no post found, try to find a page
+      const page = await ctx.runQuery(api.pages.getPageBySlug, { slug });
 
-      return new Response(html, {
-        headers: {
-          "Content-Type": "text/html; charset=utf-8",
-          "Cache-Control":
-            "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
-        },
-      });
+      if (page) {
+        const html = generateMetaHtml({
+          title: page.title,
+          description: page.excerpt || `${page.title} - ${SITE_NAME}`,
+          slug: page.slug,
+          image: page.image,
+          type: "page",
+        });
+
+        return new Response(html, {
+          headers: {
+            "Content-Type": "text/html; charset=utf-8",
+            "Cache-Control":
+              "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
+          },
+        });
+      }
+
+      // Neither post nor page found
+      return new Response("Content not found", { status: 404 });
     } catch {
       return new Response("Internal server error", { status: 500 });
     }

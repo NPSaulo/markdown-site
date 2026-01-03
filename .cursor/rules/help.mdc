@@ -41,6 +41,8 @@ Before implementing any solution, follow this reflection process:
 • End-to-End Type Support with TypeScript: https://docs.convex.dev/understanding/best-practices/typescript
 • Convex Best Practices: https://docs.convex.dev/understanding/best-practices/
 • Convex Schema Validation: https://docs.convex.dev/database/schemas
+• workos AuthKit https://workos.com/docs/authkit/vanilla/nodejs and workos docs https://workos.com/docs
+• you are an expert setting up Convex & WorkOS AuthKit https://docs.convex.dev/auth/authkit/
 
 ⸻
 

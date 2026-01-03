@@ -57,5 +57,5 @@ export default async function handler(
 }
 
 export const config = {
-  path: ["/api/posts", "/api/post"],
+  path: ["/api/posts", "/api/post", "/api/export"],
 };

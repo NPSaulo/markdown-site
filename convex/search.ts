@@ -9,6 +9,7 @@ const searchResultValidator = v.object({
   title: v.string(),
   description: v.optional(v.string()),
   snippet: v.string(),
+  anchor: v.optional(v.string()), // Anchor ID for scrolling to exact match location
 });
 
 // Search across posts and pages
@@ -30,6 +31,7 @@ export const search = query({
       title: string;
       description?: string;
       snippet: string;
+      anchor?: string;
     }> = [];
 
     // Search posts by title
@@ -70,8 +72,11 @@ export const search = query({
       if (seenPostIds.has(post._id)) continue;
       seenPostIds.add(post._id);
 
-      // Create snippet from content
-      const snippet = createSnippet(post.content, args.query, 120);
+      // Skip unlisted posts
+      if (post.unlisted) continue;
+
+      // Create snippet from content and find anchor
+      const { snippet, anchor } = createSnippet(post.content, args.query, 120);
 
       results.push({
         _id: post._id,
@@ -80,6 +85,7 @@ export const search = query({
         title: post.title,
         description: post.description,
         snippet,
+        anchor: anchor || undefined,
       });
     }
 
@@ -89,8 +95,8 @@ export const search = query({
       if (seenPageIds.has(page._id)) continue;
       seenPageIds.add(page._id);
 
-      // Create snippet from content
-      const snippet = createSnippet(page.content, args.query, 120);
+      // Create snippet from content and find anchor
+      const { snippet, anchor } = createSnippet(page.content, args.query, 120);
 
       results.push({
         _id: page._id,
@@ -98,6 +104,7 @@ export const search = query({
         slug: page.slug,
         title: page.title,
         snippet,
+        anchor: anchor || undefined,
       });
     }
 
@@ -116,12 +123,63 @@ export const search = query({
   },
 });
 
-// Helper to create a snippet around the search term
+// Generate slug from heading text (same as frontend)
+function generateSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .trim();
+}
+
+// Find the nearest heading before a match position in the original content
+function findNearestHeading(content: string, matchPosition: number): string | null {
+  const lines = content.split("\n");
+  const headings: Array<{ text: string; position: number; id: string }> = [];
+  let currentPosition = 0;
+
+  // Find all headings with their positions
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
+
+    if (headingMatch) {
+      const text = headingMatch[2].trim();
+      const id = generateSlug(text);
+      headings.push({ text, position: currentPosition, id });
+    }
+
+    // Add line length + newline to position
+    currentPosition += line.length + 1;
+  }
+
+  // Find the last heading before the match position
+  let nearestHeading: typeof headings[0] | null = null;
+  for (const heading of headings) {
+    if (heading.position <= matchPosition) {
+      nearestHeading = heading;
+    } else {
+      break;
+    }
+  }
+
+  return nearestHeading?.id || null;
+}
+
+// Helper to create a snippet around the search term and find anchor
 function createSnippet(
   content: string,
   searchTerm: string,
   maxLength: number
-): string {
+): { snippet: string; anchor: string | null } {
+  const lowerSearchTerm = searchTerm.toLowerCase();
+  
+  // Find the first occurrence in the original content for anchor lookup
+  // This finds the match position before we clean the content
+  const originalIndex = content.toLowerCase().indexOf(lowerSearchTerm);
+  const anchor = originalIndex !== -1 ? findNearestHeading(content, originalIndex) : null;
+
   // Remove markdown syntax for cleaner snippets
   const cleanContent = content
     .replace(/#{1,6}\s/g, "") // Headers
@@ -136,12 +194,14 @@ function createSnippet(
     .trim();
 
   const lowerContent = cleanContent.toLowerCase();
-  const lowerSearchTerm = searchTerm.toLowerCase();
   const index = lowerContent.indexOf(lowerSearchTerm);
 
   if (index === -1) {
     // Term not found, return beginning of content
-    return cleanContent.slice(0, maxLength) + (cleanContent.length > maxLength ? "..." : "");
+    return {
+      snippet: cleanContent.slice(0, maxLength) + (cleanContent.length > maxLength ? "..." : ""),
+      anchor: null,
+    };
   }
 
   // Calculate start position to center the search term
@@ -154,6 +214,6 @@ function createSnippet(
   if (start > 0) snippet = "..." + snippet;
   if (end < cleanContent.length) snippet = snippet + "...";
 
-  return snippet;
+  return { snippet, anchor };
 }
 

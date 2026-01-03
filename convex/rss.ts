@@ -1,11 +1,11 @@
 import { httpAction } from "./_generated/server";
 import { api } from "./_generated/api";
 
-// Site configuration for RSS feed
-const SITE_URL = process.env.SITE_URL || "https://markdowncms.netlify.app";
-const SITE_TITLE = "Markdown Site";
+// Site configuration for RSS feed - update these for your site (or run npm run configure)
+const SITE_URL = process.env.SITE_URL || "https://www.markdown.fast";
+const SITE_TITLE = "markdown sync framework";
 const SITE_DESCRIPTION =
-  "An open source markdown site powered by Convex and Netlify.";
+  "An open-source publishing framework built for AI agents and developers to ship websites, docs, or blogs. Write markdown, sync from the terminal. Your content is instantly available to browsers, LLMs, and AI agents. Built on Convex and Netlify.";
 
 // Escape XML special characters
 function escapeXml(text: string): string {
@@ -106,7 +106,7 @@ export const rssFeed = httpAction(async (ctx) => {
   const posts = await ctx.runQuery(api.posts.getAllPosts);
 
   const xml = generateRssXml(
-    posts.map((post) => ({
+    posts.map((post: { title: string; description: string; slug: string; date: string }) => ({
       title: post.title,
       description: post.description,
       slug: post.slug,
@@ -128,7 +128,7 @@ export const rssFullFeed = httpAction(async (ctx) => {
 
   // Fetch full content for each post
   const fullPosts = await Promise.all(
-    posts.map(async (post) => {
+    posts.map(async (post: { title: string; description: string; slug: string; date: string; readTime?: string; tags: string[] }) => {
       const fullPost = await ctx.runQuery(api.posts.getPostBySlug, {
         slug: post.slug,
       });

@@ -6,6 +6,116 @@ This document explains the real-time analytics system for the markdown site.
 
 The stats page at `/stats` shows live visitor data and page view counts. All stats update automatically via Convex subscriptions. No page refresh required.
 
+## Aggregate component (v1.15+)
+
+Starting with v1.15, the stats system uses the `@convex-dev/aggregate` component for efficient O(log n) counts instead of O(n) table scans. This provides significant performance improvements as the page views table grows.
+
+### Before (O(n) approach)
+
+The old implementation collected all page views and iterated through them to calculate counts:
+
+```typescript
+// Old approach: O(n) full table scan
+const allViews = await ctx.db
+  .query("pageViews")
+  .withIndex("by_timestamp")
+  .order("asc")
+  .collect();
+
+// Manual aggregation by iterating through all documents
+const viewsByPath: Record<string, number> = {};
+const uniqueSessions = new Set<string>();
+
+for (const view of allViews) {
+  viewsByPath[view.path] = (viewsByPath[view.path] || 0) + 1;
+  uniqueSessions.add(view.sessionId);
+}
+
+return {
+  totalPageViews: allViews.length,
+  uniqueVisitors: uniqueSessions.size,
+};
+```
+
+Problems with this approach:
+- Query time grows linearly with page view count
+- Memory usage increases with table size
+- Full table read on every stats query
+- Slower response times as data grows
+
+### After (O(log n) with aggregate component)
+
+The new implementation uses the Convex aggregate component for denormalized counts:
+
+```typescript
+// New approach: O(log n) using aggregate component
+const totalPageViewsCount = await totalPageViews.count(ctx);
+const uniqueVisitorsCount = await uniqueVisitors.count(ctx);
+const viewsPerPath = await pageViewsByPath.count(ctx, { namespace: path });
+```
+
+Benefits of the aggregate approach:
+- O(log n) count operations regardless of table size
+- Counts are pre-computed and maintained incrementally
+- Minimal memory usage per query
+- Consistent fast response times at any scale
+
+### Aggregate definitions
+
+Three TableAggregate instances track different metrics:
+
+```typescript
+// Total page views count (global count)
+const totalPageViews = new TableAggregate<{
+  Key: null;
+  DataModel: DataModel;
+  TableName: "pageViews";
+}>(components.totalPageViews, {
+  sortKey: () => null,
+});
+
+// Views by path (namespace per path for per-page counts)
+const pageViewsByPath = new TableAggregate<{
+  Namespace: string;
+  Key: number;
+  DataModel: DataModel;
+  TableName: "pageViews";
+}>(components.pageViewsByPath, {
+  namespace: (doc) => doc.path,
+  sortKey: (doc) => doc.timestamp,
+});
+
+// Unique visitors (sessionId as key for distinct count)
+const uniqueVisitors = new TableAggregate<{
+  Key: string;
+  DataModel: DataModel;
+  TableName: "pageViews";
+}>(components.uniqueVisitors, {
+  sortKey: (doc) => doc.sessionId,
+});
+```
+
+### Backfill existing data
+
+After deploying the aggregate component, run the backfill mutation to populate counts from existing page views:
+
+```bash
+npx convex run stats:backfillAggregates
+```
+
+**Chunked backfilling:** The backfill process handles large datasets by processing records in batches of 500. This prevents memory limit issues (Convex has a 16MB limit per function execution). The mutation schedules itself to continue processing until all records are backfilled.
+
+How it works:
+1. `backfillAggregates` starts the process and schedules the first chunk
+2. `backfillAggregatesChunk` processes 500 records at a time using pagination
+3. If more records exist, it schedules itself to continue with the next batch
+4. Progress is logged (check Convex dashboard logs)
+5. Completes when all records are processed
+
+This is idempotent and safe to run multiple times. It uses `insertIfDoesNotExist` to avoid duplicates.
+
+**Fallback behavior:** While aggregates are being backfilled (or if backfilling hasn't run yet), the `getStats` query uses direct counting from the `pageViews` table to ensure accurate stats are always displayed. This is slightly slower but guarantees correct numbers.
+
 ## Data flow
 
 1. Visitor loads any page
@@ -147,7 +257,7 @@ useEffect(() => {
 
 ### recordPageView
 
-Located in `convex/stats.ts`. Records view events with deduplication.
+Located in `convex/stats.ts`. Records view events with deduplication and updates aggregate components.
 
 Deduplication window: 30 minutes. Same session viewing same path within 30 minutes counts as 1 view.
 
@@ -174,12 +284,30 @@ export const recordPageView = mutation({
       return null;
     }
 
-    await ctx.db.insert("pageViews", {
+    // Check if this is a new unique visitor
+    const existingSessionView = await ctx.db
+      .query("pageViews")
+      .withIndex("by_session_path", (q) => q.eq("sessionId", args.sessionId))
+      .first();
+    const isNewVisitor = !existingSessionView;
+
+    // Insert new view event
+    const id = await ctx.db.insert("pageViews", {
       path: args.path,
       pageType: args.pageType,
       sessionId: args.sessionId,
       timestamp: Date.now(),
     });
+    const doc = await ctx.db.get(id);
+
+    // Update aggregate components for O(log n) counts
+    if (doc) {
+      await pageViewsByPath.insertIfDoesNotExist(ctx, doc);
+      await totalPageViews.insertIfDoesNotExist(ctx, doc);
+      if (isNewVisitor) {
+        await uniqueVisitors.insertIfDoesNotExist(ctx, doc);
+      }
+    }
 
     return null;
   },
@@ -238,7 +366,7 @@ export const heartbeat = mutation({
 
 ### getStats
 
-Returns all stats for the `/stats` page. Single query, real-time subscription.
+Returns all stats for the `/stats` page. Single query, real-time subscription. Uses aggregate components for O(log n) counts instead of O(n) table scans.
 
 What it returns:
 
@@ -246,12 +374,23 @@ What it returns:
 |-------|------|-------------|
 | activeVisitors | number | Sessions with heartbeat in last 2 minutes |
 | activeByPath | array | Breakdown of active visitors by current page |
-| totalPageViews | number | All recorded views since tracking started |
-| uniqueVisitors | number | Count of distinct session IDs |
+| totalPageViews | number | All recorded views since tracking started (via aggregate) |
+| uniqueVisitors | number | Count of distinct session IDs (via aggregate) |
 | publishedPosts | number | Blog posts with `published: true` |
 | publishedPages | number | Static pages with `published: true` |
 | trackingSince | number or null | Timestamp of earliest view event |
-| pageStats | array | Views per page with title and type |
+| pageStats | array | Views per page with title and type (per-path aggregate counts) |
+
+### Aggregate usage in getStats
+
+```typescript
+// O(log n) counts using aggregate component
+const totalPageViewsCount = await totalPageViews.count(ctx);
+const uniqueVisitorsCount = await uniqueVisitors.count(ctx);
+
+// Per-path counts using namespace
+const views = await pageViewsByPath.count(ctx, { namespace: path });
+```
 
 ### Title matching
 
@@ -331,7 +470,8 @@ No manual configuration required. Sync content, and stats track it.
 
 | File | Purpose |
 |------|---------|
-| `convex/stats.ts` | All stats mutations and queries |
+| `convex/stats.ts` | All stats mutations, queries, and aggregate definitions |
+| `convex/convex.config.ts` | Aggregate component registration (pageViewsByPath, totalPageViews, uniqueVisitors) |
 | `convex/schema.ts` | Table definitions for pageViews and activeSessions |
 | `convex/crons.ts` | Scheduled cleanup job |
 | `src/hooks/usePageTracking.ts` | Client-side tracking hook |
@@ -355,6 +495,7 @@ See `prds/howtoavoidwriteconflicts.md` for the full implementation details.
 
 ## Related documentation
 
+- [Convex aggregate component](https://github.com/get-convex/aggregate)
 - [Convex event records pattern](https://docs.convex.dev/understanding/best-practices/)
 - [Preventing write conflicts](https://docs.convex.dev/error#1)
 - [Optimistic concurrency control](https://docs.convex.dev/database/advanced/occ)

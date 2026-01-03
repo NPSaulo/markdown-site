@@ -52,7 +52,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
         case "Enter":
           e.preventDefault();
           if (results[selectedIndex]) {
-            navigate(`/${results[selectedIndex].slug}`);
+            const result = results[selectedIndex];
+            const url = result.anchor ? `/${result.slug}#${result.anchor}` : `/${result.slug}`;
+            navigate(url);
             onClose();
           }
           break;
@@ -66,8 +68,9 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
   );
 
   // Handle clicking on a result
-  const handleResultClick = (slug: string) => {
-    navigate(`/${slug}`);
+  const handleResultClick = (slug: string, anchor?: string) => {
+    const url = anchor ? `/${slug}#${anchor}` : `/${slug}`;
+    navigate(url);
     onClose();
   };
 
@@ -133,7 +136,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps) {
                 <li key={result._id}>
                   <button
                     className={`search-result-item ${index === selectedIndex ? "selected" : ""}`}
-                    onClick={() => handleResultClick(result.slug)}
+                    onClick={() => handleResultClick(result.slug, result.anchor)}
                     onMouseEnter={() => setSelectedIndex(index)}
                   >
                     <div className="search-result-icon">

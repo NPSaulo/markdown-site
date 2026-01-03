@@ -1,22 +1,44 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { ConvexProvider, ConvexReactClient } from "convex/react";
+import { StrictMode, lazy, Suspense } from "react";
+import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
-import App from "./App";
+import { ConvexReactClient, ConvexProvider } from "convex/react";
 import { ThemeProvider } from "./context/ThemeContext";
+import { FontProvider } from "./context/FontContext";
+import { isWorkOSConfigured } from "./utils/workos";
 import "./styles/global.css";
 
-const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL as string);
+// Disable browser scroll restoration to prevent scroll position being restored on navigation
+if ("scrollRestoration" in window.history) {
+  window.history.scrollRestoration = "manual";
+}
 
-ReactDOM.createRoot(document.getElementById("root")!).render(
-  <React.StrictMode>
-    <ConvexProvider client={convex}>
-      <BrowserRouter>
-        <ThemeProvider>
-          <App />
-        </ThemeProvider>
-      </BrowserRouter>
-    </ConvexProvider>
-  </React.StrictMode>
+const convex = new ConvexReactClient(import.meta.env.VITE_CONVEX_URL);
+
+// Lazy load the appropriate App wrapper based on WorkOS configuration
+const AppWithWorkOS = lazy(() => import("./AppWithWorkOS"));
+const App = lazy(() => import("./App"));
+
+// Minimal loading fallback - no visible text to prevent flash
+function LoadingFallback() {
+  return <div style={{ minHeight: "100vh" }} />;
+}
+
+createRoot(document.getElementById("root")!).render(
+  <StrictMode>
+    <BrowserRouter>
+      <ThemeProvider>
+        <FontProvider>
+          <Suspense fallback={<LoadingFallback />}>
+            {isWorkOSConfigured ? (
+              <AppWithWorkOS convex={convex} />
+            ) : (
+              <ConvexProvider client={convex}>
+                <App />
+              </ConvexProvider>
+            )}
+          </Suspense>
+        </FontProvider>
+      </ThemeProvider>
+    </BrowserRouter>
+  </StrictMode>,
 );
-
