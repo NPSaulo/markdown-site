@@ -11,6 +11,7 @@ tags: ["mcp", "cursor", "ai", "tutorial", "netlify"]
 docsSection: true
 docsSectionOrder: 2
 docsSectionGroup: "Components"
+docsSectionGroupIcon: "PuzzlePiece"
 docsLanding: true
 ---
 

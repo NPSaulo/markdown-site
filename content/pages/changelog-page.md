@@ -12,6 +12,43 @@ docsSectionOrder: 4
 All notable changes to this project.
 ![](https://img.shields.io/badge/License-MIT-yellow.svg)
 
+## v2.8.0
+
+Released January 3, 2026
+
+**Docs sidebar group icons via frontmatter**
+
+- New `docsSectionGroupIcon` frontmatter field for docs sidebar group icons
+  - Display Phosphor icons next to docs sidebar group titles
+  - Icon appears left of the expand/collapse chevron
+  - 55 supported icon names (Rocket, Book, PuzzlePiece, Gear, Code, etc.)
+  - Icon weight: regular, size: 16px
+  - Only one item per group needs to specify the icon
+  - Graceful fallback if icon name not recognized
+
+**Example usage:**
+
+```yaml
+---
+docsSection: true
+docsSectionGroup: "Getting Started"
+docsSectionGroupOrder: 1
+docsSectionGroupIcon: "Rocket"
+docsSectionOrder: 1
+---
+```
+
+**Technical details:**
+
+- Updated `convex/schema.ts` with `docsSectionGroupIcon` field in posts and pages tables
+- Updated `convex/posts.ts` and `convex/pages.ts` queries and mutations
+- Updated `scripts/sync-posts.ts` to parse `docsSectionGroupIcon` from frontmatter
+- Updated `src/components/DocsSidebar.tsx` with Phosphor icon imports and rendering
+- Added CSS styles for `.docs-sidebar-group-icon`
+- Updated `.claude/skills/frontmatter.md` with icon documentation
+
+Updated files: `convex/schema.ts`, `convex/posts.ts`, `convex/pages.ts`, `scripts/sync-posts.ts`, `src/components/DocsSidebar.tsx`, `src/styles/global.css`, `.claude/skills/frontmatter.md`, `files.md`, `TASK.md`, `changelog.md`, `content/pages/docs.md`, `public/raw/setup-guide.md`
+
 ## v2.7.0
 
 Released January 2, 2026

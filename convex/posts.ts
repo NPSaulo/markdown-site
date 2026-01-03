@@ -390,6 +390,7 @@ export const syncPosts = internalMutation({
         docsSectionGroup: v.optional(v.string()),
         docsSectionOrder: v.optional(v.number()),
         docsSectionGroupOrder: v.optional(v.number()),
+        docsSectionGroupIcon: v.optional(v.string()),
         docsLanding: v.optional(v.boolean()),
       }),
     ),
@@ -446,6 +447,7 @@ export const syncPosts = internalMutation({
           docsSectionGroup: post.docsSectionGroup,
           docsSectionOrder: post.docsSectionOrder,
           docsSectionGroupOrder: post.docsSectionGroupOrder,
+          docsSectionGroupIcon: post.docsSectionGroupIcon,
           docsLanding: post.docsLanding,
           lastSyncedAt: now,
         });
@@ -506,6 +508,7 @@ export const syncPostsPublic = mutation({
         docsSectionGroup: v.optional(v.string()),
         docsSectionOrder: v.optional(v.number()),
         docsSectionGroupOrder: v.optional(v.number()),
+        docsSectionGroupIcon: v.optional(v.string()),
         docsLanding: v.optional(v.boolean()),
       }),
     ),
@@ -562,6 +565,7 @@ export const syncPostsPublic = mutation({
           docsSectionGroup: post.docsSectionGroup,
           docsSectionOrder: post.docsSectionOrder,
           docsSectionGroupOrder: post.docsSectionGroupOrder,
+          docsSectionGroupIcon: post.docsSectionGroupIcon,
           docsLanding: post.docsLanding,
           lastSyncedAt: now,
         });
@@ -909,6 +913,7 @@ export const getDocsPosts = query({
       docsSectionGroup: v.optional(v.string()),
       docsSectionOrder: v.optional(v.number()),
       docsSectionGroupOrder: v.optional(v.number()),
+      docsSectionGroupIcon: v.optional(v.string()),
     }),
   ),
   handler: async (ctx) => {
@@ -935,6 +940,7 @@ export const getDocsPosts = query({
       docsSectionGroup: post.docsSectionGroup,
       docsSectionOrder: post.docsSectionOrder,
       docsSectionGroupOrder: post.docsSectionGroupOrder,
+      docsSectionGroupIcon: post.docsSectionGroupIcon,
     }));
   },
 });

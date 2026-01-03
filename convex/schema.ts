@@ -33,6 +33,7 @@ export default defineSchema({
     docsSectionGroup: v.optional(v.string()), // Sidebar group name in docs
     docsSectionOrder: v.optional(v.number()), // Order within group (lower = first)
     docsSectionGroupOrder: v.optional(v.number()), // Order of group itself (lower = first)
+    docsSectionGroupIcon: v.optional(v.string()), // Phosphor icon name for sidebar group
     docsLanding: v.optional(v.boolean()), // Use as /docs landing page
     lastSyncedAt: v.number(),
   })
@@ -80,6 +81,7 @@ export default defineSchema({
     docsSectionGroup: v.optional(v.string()), // Sidebar group name in docs
     docsSectionOrder: v.optional(v.number()), // Order within group (lower = first)
     docsSectionGroupOrder: v.optional(v.number()), // Order of group itself (lower = first)
+    docsSectionGroupIcon: v.optional(v.string()), // Phosphor icon name for sidebar group
     docsLanding: v.optional(v.boolean()), // Use as /docs landing page
     lastSyncedAt: v.number(),
   })

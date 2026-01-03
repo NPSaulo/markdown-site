@@ -14,6 +14,7 @@ excerpt: "Complete guide to setting up WorkOS AuthKit authentication for your da
 docsSection: true
 docsSectionOrder: 2
 docsSectionGroup: "Components"
+docsSectionGroupIcon: "PuzzlePiece"
 docsLanding: true
 ---
 

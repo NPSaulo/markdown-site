@@ -176,6 +176,7 @@ Markdown files with frontmatter for blog posts. Each file becomes a blog post.
 | `docsSectionGroup` | Group name for docs sidebar (optional). Posts with the same group name appear together. |
 | `docsSectionOrder` | Order within docs group (optional). Lower numbers appear first within the group. |
 | `docsSectionGroupOrder` | Order of the group in docs sidebar (optional). Lower numbers make the group appear first. Groups without this field sort alphabetically. |
+| `docsSectionGroupIcon` | Phosphor icon name for docs sidebar group (optional, e.g., "Rocket", "Book", "PuzzlePiece"). Icon appears left of the group title. See [Phosphor Icons](https://phosphoricons.com) for available icons. |
 
 ## Static Pages (`content/pages/`)
 
@@ -211,6 +212,7 @@ Markdown files for static pages like About, Projects, Contact, Changelog.
 | `docsSectionGroup` | Group name for docs sidebar (optional). Pages with the same group name appear together. |
 | `docsSectionOrder` | Order within docs group (optional). Lower numbers appear first within the group. |
 | `docsSectionGroupOrder` | Order of the group in docs sidebar (optional). Lower numbers make the group appear first. Groups without this field sort alphabetically. |
+| `docsSectionGroupIcon` | Phosphor icon name for docs sidebar group (optional, e.g., "Rocket", "Book", "PuzzlePiece"). Icon appears left of the group title. See [Phosphor Icons](https://phosphoricons.com) for available icons. |
 
 ## Scripts (`scripts/`)
 

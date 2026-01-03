@@ -12213,7 +12213,21 @@ body {
   color: var(--text-muted);
 }
 
-.docs-sidebar-group-title.expanded svg {
+/* Phosphor icon for group - no rotation */
+.docs-sidebar-group-title .docs-sidebar-group-icon {
+  width: 16px;
+  height: 16px;
+  transform: none !important;
+  color: var(--text-secondary);
+}
+
+.docs-sidebar-group-title.expanded .docs-sidebar-group-icon {
+  transform: none !important;
+  color: var(--text-primary);
+}
+
+/* Only rotate the chevron, not the group icon */
+.docs-sidebar-group-title.expanded svg:not(.docs-sidebar-group-icon) {
   transform: rotate(90deg);
   color: var(--text-primary);
 }

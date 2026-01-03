@@ -369,6 +369,7 @@ Your markdown content here...
 | `docsSectionGroup` | No    | Group name for docs sidebar. Posts with the same group name appear together. |
 | `docsSectionOrder` | No    | Order within docs group. Lower numbers appear first within the group. |
 | `docsSectionGroupOrder` | No | Order of the group in docs sidebar. Lower numbers make the group appear first. Groups without this field sort alphabetically. |
+| `docsSectionGroupIcon` | No | Phosphor icon name for docs sidebar group (e.g., "Rocket", "Book", "PuzzlePiece"). Icon appears left of the group title. See [Phosphor Icons](https://phosphoricons.com) for available icons. |
 
 ### How Frontmatter Works
 

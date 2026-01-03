@@ -239,6 +239,7 @@ export const getDocsPages = query({
       docsSectionGroup: v.optional(v.string()),
       docsSectionOrder: v.optional(v.number()),
       docsSectionGroupOrder: v.optional(v.number()),
+      docsSectionGroupIcon: v.optional(v.string()),
     }),
   ),
   handler: async (ctx) => {
@@ -265,6 +266,7 @@ export const getDocsPages = query({
       docsSectionGroup: page.docsSectionGroup,
       docsSectionOrder: page.docsSectionOrder,
       docsSectionGroupOrder: page.docsSectionGroupOrder,
+      docsSectionGroupIcon: page.docsSectionGroupIcon,
     }));
   },
 });
@@ -345,6 +347,7 @@ export const syncPagesPublic = mutation({
         docsSectionGroup: v.optional(v.string()),
         docsSectionOrder: v.optional(v.number()),
         docsSectionGroupOrder: v.optional(v.number()),
+        docsSectionGroupIcon: v.optional(v.string()),
         docsLanding: v.optional(v.boolean()),
       }),
     ),
@@ -398,6 +401,7 @@ export const syncPagesPublic = mutation({
           docsSectionGroup: page.docsSectionGroup,
           docsSectionOrder: page.docsSectionOrder,
           docsSectionGroupOrder: page.docsSectionGroupOrder,
+          docsSectionGroupIcon: page.docsSectionGroupIcon,
           docsLanding: page.docsLanding,
           lastSyncedAt: now,
         });

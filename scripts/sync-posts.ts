@@ -50,6 +50,7 @@ interface PostFrontmatter {
   docsSectionGroup?: string; // Sidebar group name in docs
   docsSectionOrder?: number; // Order within group (lower = first)
   docsSectionGroupOrder?: number; // Order of group itself (lower = first)
+  docsSectionGroupIcon?: string; // Phosphor icon name for sidebar group
   docsLanding?: boolean; // Use as /docs landing page
 }
 
@@ -83,6 +84,7 @@ interface ParsedPost {
   docsSectionGroup?: string; // Sidebar group name in docs
   docsSectionOrder?: number; // Order within group (lower = first)
   docsSectionGroupOrder?: number; // Order of group itself (lower = first)
+  docsSectionGroupIcon?: string; // Phosphor icon name for sidebar group
   docsLanding?: boolean; // Use as /docs landing page
 }
 
@@ -113,6 +115,7 @@ interface PageFrontmatter {
   docsSectionGroup?: string; // Sidebar group name in docs
   docsSectionOrder?: number; // Order within group (lower = first)
   docsSectionGroupOrder?: number; // Order of group itself (lower = first)
+  docsSectionGroupIcon?: string; // Phosphor icon name for sidebar group
   docsLanding?: boolean; // Use as /docs landing page
 }
 
@@ -143,6 +146,7 @@ interface ParsedPage {
   docsSectionGroup?: string; // Sidebar group name in docs
   docsSectionOrder?: number; // Order within group (lower = first)
   docsSectionGroupOrder?: number; // Order of group itself (lower = first)
+  docsSectionGroupIcon?: string; // Phosphor icon name for sidebar group
   docsLanding?: boolean; // Use as /docs landing page
 }
 
@@ -198,6 +202,7 @@ function parseMarkdownFile(filePath: string): ParsedPost | null {
       docsSectionGroup: frontmatter.docsSectionGroup, // Sidebar group name
       docsSectionOrder: frontmatter.docsSectionOrder, // Order within group
       docsSectionGroupOrder: frontmatter.docsSectionGroupOrder, // Order of group itself
+      docsSectionGroupIcon: frontmatter.docsSectionGroupIcon, // Phosphor icon name for sidebar group
       docsLanding: frontmatter.docsLanding, // Use as docs landing page
     };
   } catch (error) {
@@ -263,6 +268,7 @@ function parsePageFile(filePath: string): ParsedPage | null {
       docsSectionGroup: frontmatter.docsSectionGroup, // Sidebar group name
       docsSectionOrder: frontmatter.docsSectionOrder, // Order within group
       docsSectionGroupOrder: frontmatter.docsSectionGroupOrder, // Order of group itself
+      docsSectionGroupIcon: frontmatter.docsSectionGroupIcon, // Phosphor icon name for sidebar group
       docsLanding: frontmatter.docsLanding, // Use as docs landing page
     };
   } catch (error) {

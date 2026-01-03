@@ -4,6 +4,123 @@ import { Link, useLocation } from "react-router-dom";
 import { ChevronRight } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import siteConfig from "../config/siteConfig";
+import {
+  House,
+  Book,
+  Gear,
+  Folder,
+  Code,
+  FileText,
+  Question,
+  Lightbulb,
+  Rocket,
+  Star,
+  Heart,
+  Bell,
+  Calendar,
+  User,
+  ArrowRight,
+  Check,
+  Warning,
+  Info,
+  Lightning,
+  Database,
+  Globe,
+  Lock,
+  Key,
+  Shield,
+  Terminal,
+  Package,
+  PuzzlePiece,
+  Flag,
+  Target,
+  Compass,
+  MapPin,
+  Bookmark,
+  Tag,
+  Hash,
+  Link as LinkIcon,
+  At,
+  Play,
+  Pause,
+  Plus,
+  Minus,
+  X,
+  List,
+  MagnifyingGlass,
+  FunnelSimple,
+  SortAscending,
+  Download,
+  Upload,
+  Share,
+  Copy,
+  Clipboard,
+  PencilSimple,
+  Trash,
+  Archive,
+  Eye,
+  EyeClosed,
+  type Icon,
+} from "@phosphor-icons/react";
+
+// Map of supported Phosphor icon names to components
+const docsSectionIcons: Record<string, Icon> = {
+  House,
+  Book,
+  Gear,
+  Folder,
+  Code,
+  FileText,
+  Question,
+  Lightbulb,
+  Rocket,
+  Star,
+  Heart,
+  Bell,
+  Calendar,
+  User,
+  ArrowRight,
+  Check,
+  Warning,
+  Info,
+  Lightning,
+  Database,
+  Globe,
+  Lock,
+  Key,
+  Shield,
+  Terminal,
+  Package,
+  PuzzlePiece,
+  Flag,
+  Target,
+  Compass,
+  MapPin,
+  Bookmark,
+  Tag,
+  Hash,
+  Link: LinkIcon,
+  At,
+  Play,
+  Pause,
+  Plus,
+  Minus,
+  X,
+  List,
+  MagnifyingGlass,
+  FunnelSimple,
+  SortAscending,
+  Download,
+  Upload,
+  Share,
+  Copy,
+  Clipboard,
+  PencilSimple,
+  Trash,
+  Archive,
+  Eye,
+  EyeClosed,
+};
 
 // Docs item from query
 interface DocsItem {
@@ -13,12 +130,14 @@ interface DocsItem {
   docsSectionGroup?: string;
   docsSectionOrder?: number;
   docsSectionGroupOrder?: number;
+  docsSectionGroupIcon?: string;
 }
 
 // Grouped docs structure
 interface DocsGroup {
   name: string;
   items: DocsItem[];
+  icon?: string;
 }
 
 interface DocsSidebarProps {
@@ -86,7 +205,9 @@ export default function DocsSidebar({ currentSlug, isMobile }: DocsSidebarProps)
     for (const name of sortedGroupNames) {
       const items = groupMap.get(name)!;
       items.sort(sortItems);
-      result.push({ name, items });
+      // Get the first icon found in the group (allows any item to define the group icon)
+      const icon = items.find(i => i.docsSectionGroupIcon)?.docsSectionGroupIcon;
+      result.push({ name, items, icon });
     }
 
     // Add ungrouped items at the end if any
@@ -186,6 +307,12 @@ export default function DocsSidebar({ currentSlug, isMobile }: DocsSidebarProps)
               onClick={() => toggleGroup(group.name)}
               type="button"
             >
+              {group.icon && docsSectionIcons[group.icon] && (
+                (() => {
+                  const IconComponent = docsSectionIcons[group.icon];
+                  return <IconComponent size={16} weight="regular" className="docs-sidebar-group-icon" />;
+                })()
+              )}
               <ChevronRight />
               <span>{group.name}</span>
             </button>
