@@ -4,9 +4,17 @@
 
 ## Current Status
 
-v2.8.2 ready. Fixed footer not displaying on docs section pages.
+v2.8.3 ready. Updated raw/index.md to include home.md and footer.md content.
 
 ## Completed
+
+- [x] Update raw/index.md to include home.md and footer.md content
+  - [x] Updated `generateHomepageIndex` function in `scripts/sync-posts.ts`
+  - [x] Home intro content (slug: home-intro) now displays at top of index.md
+  - [x] Footer content (slug: footer) now displays at bottom of index.md
+  - [x] Horizontal rule separators between sections
+  - [x] Falls back to generic message if home-intro page not found
+  - [x] Mirrors actual homepage structure for AI agents reading raw markdown
 
 - [x] Fix footer not displaying on docs section pages with showFooter: true
   - [x] Added footer.md content query to Post.tsx (matching Home.tsx and Blog.tsx pattern)

@@ -476,9 +476,21 @@ function generateHomepageIndex(posts: ParsedPost[], pages: ParsedPage[]): void {
     return new Date(b.date).getTime() - new Date(a.date).getTime();
   });
 
+  // Find the home-intro page for homepage content
+  const homeIntroPage = publishedPages.find((p) => p.slug === "home-intro");
+  // Find the footer page for footer content
+  const footerPage = publishedPages.find((p) => p.slug === "footer");
+
   // Build markdown content
   let markdown = `# Homepage\n\n`;
-  markdown += `This is the homepage index of all published content.\n\n`;
+
+  // Include home intro content if available
+  if (homeIntroPage && homeIntroPage.content) {
+    markdown += `${homeIntroPage.content}\n\n`;
+    markdown += `---\n\n`;
+  } else {
+    markdown += `This is the homepage index of all published content.\n\n`;
+  }
 
   // Add posts section
   if (sortedPosts.length > 0) {
@@ -527,6 +539,12 @@ function generateHomepageIndex(posts: ParsedPost[], pages: ParsedPage[]): void {
   markdown += `---\n\n`;
   markdown += `**Total Content:** ${sortedPosts.length} posts, ${publishedPages.length} pages\n`;
   markdown += `\nAll content is available as raw markdown files at \`/raw/{slug}.md\`\n`;
+
+  // Add footer content if available
+  if (footerPage && footerPage.content) {
+    markdown += `\n---\n\n`;
+    markdown += `${footerPage.content}\n`;
+  }
 
   // Write index.md file
   const indexPath = path.join(RAW_OUTPUT_DIR, "index.md");

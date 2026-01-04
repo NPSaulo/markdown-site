@@ -222,7 +222,7 @@ Markdown files for static pages like About, Projects, Contact, Changelog.
 
 | File                      | Description                                           |
 | ------------------------- | ----------------------------------------------------- |
-| `sync-posts.ts`           | Syncs markdown files to Convex at build time (markdown sync v2) |
+| `sync-posts.ts`           | Syncs markdown files to Convex at build time (markdown sync v2). Generates `raw/index.md` with home.md content at top, posts/pages list, and footer.md content at bottom |
 | `sync-discovery-files.ts` | Updates AGENTS.md, CLAUDE.md, and llms.txt with current app data  |
 | `import-url.ts`           | Imports external URLs as markdown posts (Firecrawl)   |
 | `configure-fork.ts`       | Automated fork configuration (reads fork-config.json). ES module compatible using fileURLToPath for __dirname equivalent. |

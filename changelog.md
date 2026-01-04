@@ -4,6 +4,22 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.8.3] - 2026-01-03
+
+### Changed
+
+- `raw/index.md` now includes home.md and footer.md content
+  - Home intro content from `content/pages/home.md` (slug: home-intro) displays at top
+  - Footer content from `content/pages/footer.md` (slug: footer) displays at bottom
+  - Mirrors the actual homepage structure for AI agents reading raw markdown
+  - Falls back to generic message if home-intro page not found
+
+### Technical
+
+- Updated `generateHomepageIndex` function in `scripts/sync-posts.ts`
+- Finds home-intro and footer pages from published pages array
+- Adds horizontal rule separators between sections
+
 ## [2.8.2] - 2026-01-03
 
 ### Fixed

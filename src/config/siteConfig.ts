@@ -454,7 +454,7 @@ export const siteConfig: SiteConfig = {
   // Visitor map configuration
   // Displays real-time visitor locations on the stats page
   visitorMap: {
-    enabled: true, // Set to false to hide the visitor map
+    enabled: false, // Set to false to hide the visitor map
     title: "Live Visitors", // Optional title above the map
   },
 

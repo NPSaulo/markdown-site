@@ -15,7 +15,7 @@ import { useSidebar } from "../context/SidebarContext";
 import { format, parseISO } from "date-fns";
 import { ArrowLeft, Link as LinkIcon, Rss, Tag } from "lucide-react";
 import { XLogo, LinkedinLogo } from "@phosphor-icons/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import siteConfig from "../config/siteConfig";
 
 // Site configuration - update these for your site (or run npm run configure)
@@ -43,8 +43,36 @@ export default function Post({
   const slug = propSlug || routeSlug;
 
   // Check for page first, then post
-  const page = useQuery(api.pages.getPageBySlug, slug ? { slug } : "skip");
-  const post = useQuery(api.posts.getPostBySlug, slug ? { slug } : "skip");
+  const pageQuery = useQuery(api.pages.getPageBySlug, slug ? { slug } : "skip");
+  const postQuery = useQuery(api.posts.getPostBySlug, slug ? { slug } : "skip");
+
+  // Cache last loaded docs content to prevent flash during navigation
+  // This implements stale-while-revalidate for seamless transitions
+  type DocsCache = { page: typeof pageQuery; post: typeof postQuery };
+  const lastDocsContentRef = useRef<DocsCache | null>(null);
+
+  // Determine if this is a docs section page (for caching logic)
+  const isDocsContent = siteConfig.docsSection?.enabled && slug;
+
+  // Check if queries are still loading
+  const isLoading = pageQuery === undefined || postQuery === undefined;
+  const isLoaded = pageQuery !== undefined && postQuery !== undefined;
+
+  // Update cache when both queries have resolved and we have displayable content
+  useEffect(() => {
+    if (isDocsContent && isLoaded) {
+      const hasContent = pageQuery !== null || postQuery !== null;
+      if (hasContent) {
+        lastDocsContentRef.current = { page: pageQuery, post: postQuery };
+      }
+    }
+  }, [pageQuery, postQuery, isDocsContent, isLoaded]);
+
+  // Use cached data while loading new docs content (stale-while-revalidate)
+  // This prevents the blank flash when navigating between docs pages
+  const useCache = isDocsContent && isLoading && lastDocsContentRef.current !== null;
+  const page = useCache ? lastDocsContentRef.current!.page : pageQuery;
+  const post = useCache ? lastDocsContentRef.current!.post : postQuery;
 
   // Fetch related posts based on current post's tags (only for blog posts, not pages)
   const relatedPosts = useQuery(

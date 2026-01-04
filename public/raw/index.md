@@ -1,6 +1,30 @@
 # Homepage
 
-This is the homepage index of all published content.
+An open-source publishing framework built for AI agents and developers to ship **[docs](/docs)**, or **[blogs](/blog)** or **[websites](/)**.
+
+Write markdown, sync from the terminal. **[Fork it](https://github.com/waynesutton/markdown-site)**, customize it, ship it.
+
+<!-- This is a comments
+Your content is instantly available to browsers, LLMs, and AI
+agents. -->
+
+## Features
+
+**AI agent integration** — API endpoints, raw markdown files, skills.md and MCP server included.
+
+**File-based publishing** — Write markdown locally, run `npm run sync`, content syncs everywhere.
+
+**URL content import** — Import urls to scrape any webpage into markdown with Firecrawl.
+
+**Newsletter automation** — Built-in subscription forms and admin dashboard powered by AgentMail.
+
+**Multiple output formats** — JSON via API endpoints, raw .md files, and RSS feeds.
+
+**Real-time team sync** — Multiple developers run npm run sync from different machines.
+
+**Sync Commands** - Sync discovery commands to update AGENTS.md, CLAUDE.md, and llms.txt
+
+---
 
 ## Blog Posts (18)
 
@@ -57,3 +81,9 @@ This is the homepage index of all published content.
 **Total Content:** 18 posts, 8 pages
 
 All content is available as raw markdown files at `/raw/{slug}.md`
+
+---
+
+Built with [Convex](https://convex.dev) for real-time sync and deployed on [Netlify](https://netlify.com). Read the [project on GitHub](https://github.com/waynesutton/markdown-site) to fork and deploy your own. View [real-time site stats](/stats).
+
+Created by [Wayne](https://x.com/waynesutton) with Convex, Cursor, and Claude Opus 4.5. Follow on [Twitter/X](https://x.com/waynesutton), [LinkedIn](https://www.linkedin.com/in/waynesutton/), and [GitHub](https://github.com/waynesutton). This project is licensed under the MIT [License](https://github.com/waynesutton/markdown-site?tab=MIT-1-ov-file).

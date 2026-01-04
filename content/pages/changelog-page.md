@@ -12,6 +12,26 @@ docsSectionOrder: 4
 All notable changes to this project.
 ![](https://img.shields.io/badge/License-MIT-yellow.svg)
 
+## v2.8.3
+
+Released January 3, 2026
+
+**Raw index.md now includes home.md and footer.md content**
+
+- `raw/index.md` now mirrors the actual homepage structure
+  - Home intro content from `content/pages/home.md` displays at top
+  - Footer content from `content/pages/footer.md` displays at bottom
+  - Horizontal rule separators between sections
+  - Falls back to generic message if home-intro page not found
+- AI agents reading `/raw/index.md` now get the full homepage experience
+
+**Technical details:**
+
+- Updated `generateHomepageIndex` function in `scripts/sync-posts.ts`
+- Finds home-intro and footer pages from published pages array by slug
+
+Updated files: `scripts/sync-posts.ts`
+
 ## v2.8.2
 
 Released January 3, 2026
