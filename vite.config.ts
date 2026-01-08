@@ -26,6 +26,7 @@ export default defineConfig(({ mode }) => {
               "rehype-sanitize",
             ],
             "vendor-syntax": ["react-syntax-highlighter"],
+            "vendor-diffs": ["@pierre/diffs"],
           },
         },
       },

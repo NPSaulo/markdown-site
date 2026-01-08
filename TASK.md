@@ -4,9 +4,34 @@
 
 ## Current Status
 
-v2.12.0 ready. Canonical URL fix for GitHub Issue #6 implemented.
+v2.15.0 ready. Export as PDF feature added to CopyPageDropdown.
 
 ## Completed
+
+- [x] Export as PDF option in CopyPageDropdown
+  - [x] Added browser print dialog for saving pages as PDF
+  - [x] Clean formatted output with markdown syntax stripped
+  - [x] Title as heading, metadata on single line, readable content
+  - [x] Uses Phosphor FilePdf icon (already installed)
+  - [x] Positioned at end of dropdown menu
+  - [x] Added formatForPrint function and handleExportPDF handler
+  - [x] Updated files.md, changelog.md, task.md documentation
+
+- [x] Core Web Vitals performance optimizations
+  - [x] Fixed non-composited animations in visitor map (SVG r to transform: scale)
+  - [x] Removed 5 duplicate @keyframes spin definitions
+  - [x] Added will-change hints to animated elements
+  - [x] Inlined critical CSS in index.html for faster first paint
+  - [x] Added preconnect hints for convex.site
+
+- [x] Enhanced diff code block rendering with @pierre/diffs
+  - [x] Added @pierre/diffs package for Shiki-based diff visualization
+  - [x] Created DiffCodeBlock component with unified/split view toggle
+  - [x] Updated BlogPost.tsx to route diff/patch blocks to new renderer
+  - [x] Added theme-aware CSS styles for diff blocks
+  - [x] Added vendor-diffs chunk to Vite config for code splitting
+  - [x] Created "How to Use Code Blocks" blog post with examples
+  - [x] Updated files.md with DiffCodeBlock documentation
 
 - [x] Canonical URL mismatch fix (GitHub Issue #6)
   - [x] Raw HTML was serving homepage canonical instead of page-specific canonical

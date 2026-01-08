@@ -4,6 +4,77 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.15.0] - 2026-01-07
+
+### Added
+
+- Export as PDF option in CopyPageDropdown
+  - Browser-based print dialog for saving pages as PDF
+  - Clean formatted output (no markdown syntax visible)
+  - Title displayed as proper heading
+  - Metadata shown as clean line (date, read time, tags)
+  - Content with markdown stripped for readable document
+  - Uses Phosphor FilePdf icon
+  - Positioned at end of dropdown menu
+
+### Technical
+
+- Added `formatForPrint` function to strip markdown syntax from content
+- Added `handleExportPDF` handler with styled print window
+- Imports `FilePdf` from `@phosphor-icons/react` (already installed)
+
+## [2.14.0] - 2026-01-07
+
+### Fixed
+
+- Core Web Vitals performance optimizations
+  - Fixed non-composited animations in visitor map (SVG `r` attribute changed to `transform: scale()`)
+  - Removed 5 duplicate `@keyframes spin` definitions from global.css
+  - Added `will-change` hints to animated elements for GPU compositing
+
+### Added
+
+- Critical CSS inlined in index.html for faster first paint
+  - Theme variables (dark/light/tan/cloud)
+  - Reset and base body styles
+  - Layout skeleton and navigation styles
+- Additional resource hints in index.html
+  - Preconnect to convex.site for faster API calls
+
+### Technical
+
+- Updated `src/styles/global.css`:
+  - Converted visitor-pulse animations from SVG `r` to `transform: scale()` (GPU-composited)
+  - Added `transform-origin`, `transform-box`, and `will-change` to pulse ring elements
+  - Added `will-change` to `.theme-toggle`, `.copy-page-menu`, `.search-modal-backdrop`, `.scroll-to-top`
+  - Removed duplicate `@keyframes spin` at lines 9194, 10091, 10243, 10651, 13726
+- Updated `src/components/VisitorMap.tsx`:
+  - Changed pulse ring `r` values from 12/8 to base value 5 (scaling handled by CSS)
+- Updated `index.html`:
+  - Added inline critical CSS (~2KB) for instant first contentful paint
+  - Added preconnect/dns-prefetch for convex.site
+
+## [2.13.0] - 2026-01-07
+
+### Added
+
+- Enhanced diff code block rendering with @pierre/diffs library
+  - Diff and patch code blocks now render with Shiki-based syntax highlighting
+  - Unified and split (side-by-side) view modes with toggle button
+  - Theme-aware colors (dark/light/tan/cloud support)
+  - Copy button for diff content
+  - Automatic routing: ```diff and ```patch blocks use enhanced renderer
+- New blog post: "How to Use Code Blocks" with syntax highlighting and diff examples
+- DiffCodeBlock component (`src/components/DiffCodeBlock.tsx`)
+
+### Technical
+
+- Added `@pierre/diffs` package for enhanced diff visualization
+- Updated `BlogPost.tsx` to route diff/patch language blocks to DiffCodeBlock
+- Added diff block CSS styles to `global.css`
+- Added `vendor-diffs` chunk to Vite config for code splitting
+- Updated `files.md` with DiffCodeBlock documentation
+
 ## [2.12.0] - 2026-01-07
 
 ### Fixed

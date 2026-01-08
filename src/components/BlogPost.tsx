@@ -47,6 +47,7 @@ import { Copy, Check, X } from "lucide-react";
 import { useTheme } from "../context/ThemeContext";
 import NewsletterSignup from "./NewsletterSignup";
 import ContactForm from "./ContactForm";
+import DiffCodeBlock from "./DiffCodeBlock";
 import siteConfig from "../config/siteConfig";
 import { useSearchHighlighting } from "../hooks/useSearchHighlighting";
 
@@ -611,6 +612,17 @@ export default function BlogPost({
 
           const codeString = String(children).replace(/\n$/, "");
           const language = match ? match[1] : "text";
+
+          // Route diff/patch to DiffCodeBlock for enhanced diff rendering
+          if (language === "diff" || language === "patch") {
+            return (
+              <DiffCodeBlock
+                code={codeString}
+                language={language as "diff" | "patch"}
+              />
+            );
+          }
+
           const isTextBlock = language === "text";
 
           // Custom styles for text blocks to enable wrapping
@@ -899,6 +911,17 @@ export default function BlogPost({
 
               const codeString = String(children).replace(/\n$/, "");
               const language = match ? match[1] : "text";
+
+              // Route diff/patch to DiffCodeBlock for enhanced diff rendering
+              if (language === "diff" || language === "patch") {
+                return (
+                  <DiffCodeBlock
+                    code={codeString}
+                    language={language as "diff" | "patch"}
+                  />
+                );
+              }
+
               const isTextBlock = language === "text";
 
               // Custom styles for text blocks to enable wrapping

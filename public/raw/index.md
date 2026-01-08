@@ -30,8 +30,10 @@ agents. -->
 
 ---
 
-## Blog Posts (18)
+## Blog Posts (19)
 
+- **[How to Use Code Blocks](/raw/how-to-use-code-blocks.md)** - A guide to syntax highlighting, diff rendering, and code formatting in your markdown posts.
+  - Date: 2026-01-07 | Reading time: 4 min read | Tags: tutorial, markdown, code, syntax-highlighting
 - **[How I added WorkOS to my Convex app with Cursor](/raw/workos-with-convex-cursor.md)** - A timeline of adding WorkOS AuthKit authentication to my markdown blog dashboard using Cursor, prompt engineering, and vibe coding. From PRD import to published feature.
   - Date: 2025-12-30 | Reading time: 8 min read | Tags: cursor, workos, convex, prompt-engineering, ai-coding
 - **[How to setup WorkOS with Markdown Sync](/raw/how-to-setup-workos.md)** - Step-by-step guide to configure WorkOS AuthKit authentication for your markdown blog dashboard. WorkOS is optional and can be enabled in siteConfig.ts.
@@ -90,7 +92,7 @@ agents. -->
 
 ---
 
-**Total Content:** 18 posts, 16 pages
+**Total Content:** 19 posts, 16 pages
 
 All content is available as raw markdown files at `/raw/{slug}.md`
 

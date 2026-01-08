@@ -7,6 +7,94 @@ Date: 2026-01-08
 
 All notable changes to this project.
 
+## v2.15.0
+
+Released January 7, 2026
+
+**Export as PDF**
+
+Added PDF export option to CopyPageDropdown. Users can now export any blog post or page as a clean, formatted PDF document using the browser's native print dialog.
+
+**Features:**
+
+- Export as PDF button in Copy page dropdown (positioned at end of menu)
+- Clean formatted output without markdown syntax
+- Title displayed as proper heading
+- Metadata shown on single line (date, read time, tags)
+- Content with markdown stripped for readable document
+- Uses Phosphor FilePdf icon
+
+**Technical:**
+
+- Added `formatForPrint` function to strip markdown syntax (headings, bold, italic, code, links, blockquotes)
+- Added `handleExportPDF` handler that opens styled print window
+- Imports `FilePdf` from `@phosphor-icons/react` (already installed in project)
+
+**Files changed:**
+
+- `src/components/CopyPageDropdown.tsx` - New PDF export functionality
+
+---
+
+## v2.14.0
+
+Released January 7, 2026
+
+**Core Web Vitals performance optimizations**
+
+Fixes for PageSpeed Insights failures on mobile and desktop. These changes improve Largest Contentful Paint (LCP) and eliminate non-composited animation warnings.
+
+**Fixes:**
+
+- Non-composited animations: Visitor map pulse animations now use GPU-composited `transform: scale()` instead of animating SVG `r` attribute
+- Duplicate keyframes: Removed 5 redundant `@keyframes spin` definitions from CSS
+- GPU compositing hints: Added `will-change` to animated elements (theme toggle, dropdown menus, modals, scroll-to-top button)
+
+**Performance additions:**
+
+- Critical CSS inlined in index.html (~2KB) for instant first paint
+- Theme variables, reset styles, layout skeleton, and navigation pre-loaded
+- Additional preconnect hints for Convex site endpoints
+
+**Files changed:**
+
+- `src/styles/global.css` - Animation fixes, will-change hints, removed duplicates
+- `src/components/VisitorMap.tsx` - Updated SVG circle radius for transform-based animation
+- `index.html` - Inline critical CSS, resource hints
+
+---
+
+## v2.13.0
+
+Released January 7, 2026
+
+**Enhanced diff code block rendering**
+
+Diff and patch code blocks now render with enhanced visualization powered by @pierre/diffs. This brings Shiki-based syntax highlighting specifically designed for showing code changes.
+
+**Features:**
+
+- Unified view (default): Single column with +/- indicators
+- Split view: Side-by-side comparison of old and new code
+- View toggle button to switch between modes
+- Theme-aware colors matching dark/light/tan/cloud themes
+- Copy button for copying raw diff content
+- Automatic routing: Use ```diff or ```patch in markdown
+
+**New documentation:**
+
+- Blog post: "How to Use Code Blocks" with examples of regular code blocks and diff rendering
+
+**Technical:**
+
+- Added `@pierre/diffs` package
+- Created `DiffCodeBlock` component (`src/components/DiffCodeBlock.tsx`)
+- Updated `BlogPost.tsx` to route diff/patch blocks to new renderer
+- Added diff block CSS styles to `global.css`
+- Added `vendor-diffs` chunk to Vite config
+
+---
+
 ## v2.12.0
 
 Released January 7, 2026

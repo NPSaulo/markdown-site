@@ -7,6 +7,7 @@ import {
   Download,
   ExternalLink,
 } from "lucide-react";
+import { FilePdf } from "@phosphor-icons/react";
 
 // Maximum URL length for query parameters (conservative limit)
 const MAX_URL_LENGTH = 6000;
@@ -108,6 +109,38 @@ function formatAsSkill(props: CopyPageDropdownProps): string {
   }
 
   return skill;
+}
+
+// Format content for print/PDF export (clean, readable document)
+function formatForPrint(props: CopyPageDropdownProps): {
+  title: string;
+  metadata: string[];
+  description: string;
+  content: string;
+} {
+  const { title, content, description, date, tags, readTime } = props;
+
+  const metadata: string[] = [];
+  if (date) metadata.push(date);
+  if (readTime) metadata.push(readTime);
+  if (tags && tags.length > 0) metadata.push(tags.join(", "));
+
+  // Strip common markdown syntax for cleaner display
+  const cleanContent = content
+    .replace(/^#{1,6}\s+/gm, "")           // Remove heading markers
+    .replace(/\*\*([^*]+)\*\*/g, "$1")     // Bold to plain
+    .replace(/\*([^*]+)\*/g, "$1")         // Italic to plain
+    .replace(/`([^`]+)`/g, "$1")           // Inline code to plain
+    .replace(/^\s*[-*+]\s+/gm, "- ")       // Normalize list markers
+    .replace(/^\s*>\s+/gm, "")             // Remove blockquote markers
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1"); // Links to text only
+
+  return {
+    title,
+    metadata,
+    description: description || "",
+    content: cleanContent,
+  };
 }
 
 // Check if URL length exceeds safe limits
@@ -278,6 +311,67 @@ export default function CopyPageDropdown(props: CopyPageDropdownProps) {
     setFeedbackMessage("Downloaded!");
     clearFeedback();
     setTimeout(() => setIsOpen(false), 1500);
+  };
+
+  // Handle export as PDF (browser print dialog)
+  const handleExportPDF = () => {
+    const printData = formatForPrint(props);
+    const printWindow = window.open("", "_blank");
+    if (printWindow) {
+      const escapeHtml = (str: string) =>
+        str.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+          <head>
+            <title>${escapeHtml(printData.title)}</title>
+            <style>
+              body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+                max-width: 700px;
+                margin: 0 auto;
+                padding: 40px 20px;
+                line-height: 1.7;
+                color: #1a1a1a;
+              }
+              h1 {
+                font-size: 28px;
+                margin-bottom: 8px;
+                font-weight: 600;
+              }
+              .metadata {
+                color: #666;
+                font-size: 14px;
+                margin-bottom: 16px;
+              }
+              .description {
+                font-size: 18px;
+                color: #444;
+                margin-bottom: 24px;
+                font-style: italic;
+              }
+              .content {
+                white-space: pre-wrap;
+                font-size: 16px;
+              }
+              @media print {
+                body { padding: 20px; }
+              }
+            </style>
+          </head>
+          <body>
+            <h1>${escapeHtml(printData.title)}</h1>
+            ${printData.metadata.length > 0 ? `<div class="metadata">${printData.metadata.join(" | ")}</div>` : ""}
+            ${printData.description ? `<div class="description">${escapeHtml(printData.description)}</div>` : ""}
+            <div class="content">${escapeHtml(printData.content)}</div>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+      printWindow.print();
+    }
+    setIsOpen(false);
   };
 
   // Get feedback icon
@@ -512,6 +606,22 @@ export default function CopyPageDropdown(props: CopyPageDropdownProps) {
               </span>
               <span className="copy-page-item-desc">
                 Ask AI about this link
+              </span>
+            </div>
+          </button>
+
+          {/* Export as PDF option */}
+          <button
+            className="copy-page-item"
+            onClick={handleExportPDF}
+            role="menuitem"
+            tabIndex={0}
+          >
+            <FilePdf size={16} className="copy-page-icon" aria-hidden="true" />
+            <div className="copy-page-item-content">
+              <span className="copy-page-item-title">Export as PDF</span>
+              <span className="copy-page-item-desc">
+                Print or save as PDF
               </span>
             </div>
           </button>

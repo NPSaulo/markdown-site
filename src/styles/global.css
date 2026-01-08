@@ -455,6 +455,7 @@ body {
   transition:
     color 0.2s ease,
     background-color 0.2s ease;
+  will-change: color, background-color;
 }
 
 .theme-toggle:hover {
@@ -820,6 +821,7 @@ body {
   z-index: 1000;
   overflow: hidden;
   animation: dropdownFadeIn 0.15s ease;
+  will-change: transform, opacity;
 }
 
 @keyframes spin {
@@ -1798,6 +1800,79 @@ body {
 
 .inline-copy-button:active {
   transform: scale(0.95);
+}
+
+/* Diff block styles for @pierre/diffs */
+.diff-block-wrapper {
+  position: relative;
+  margin: 24px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.diff-block-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.diff-language {
+  font-size: var(--font-size-code-language);
+  font-weight: 500;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.diff-block-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.diff-view-toggle,
+.diff-copy-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.diff-view-toggle:hover,
+.diff-copy-button:hover {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+
+.diff-view-toggle:active,
+.diff-copy-button:active {
+  transform: scale(0.95);
+}
+
+/* Theme-specific styles for @pierre/diffs */
+.diff-block-wrapper[data-theme-type="dark"] {
+  --diffs-bg-color: #1e1e1e;
+  --diffs-fg-color: #d4d4d4;
+}
+
+.diff-block-wrapper[data-theme-type="light"] {
+  --diffs-bg-color: #ffffff;
+  --diffs-fg-color: #24292e;
 }
 
 /* Image styles */
@@ -3422,6 +3497,7 @@ body {
   justify-content: center;
   padding-top: 15vh;
   animation: backdropFadeIn 0.15s ease;
+  will-change: opacity;
 }
 
 @keyframes backdropFadeIn {
@@ -4376,44 +4452,50 @@ body {
   max-height: 300px;
 }
 
-/* Pulse animation for visitor dots */
+/* Pulse animation for visitor dots - using transform for GPU compositing */
 @keyframes visitor-pulse {
   0% {
-    r: 5;
+    transform: scale(1);
     opacity: 0.6;
   }
   50% {
-    r: 18;
+    transform: scale(3.6);
     opacity: 0;
   }
   100% {
-    r: 5;
+    transform: scale(1);
     opacity: 0;
   }
 }
 
 @keyframes visitor-pulse-mid {
   0% {
-    r: 5;
+    transform: scale(1);
     opacity: 0.3;
   }
   50% {
-    r: 12;
+    transform: scale(2.4);
     opacity: 0;
   }
   100% {
-    r: 5;
+    transform: scale(1);
     opacity: 0;
   }
 }
 
 .visitor-pulse-ring {
   animation: visitor-pulse 2.5s ease-out infinite;
+  transform-origin: center;
+  transform-box: fill-box;
+  will-change: transform, opacity;
 }
 
 .visitor-pulse-ring-mid {
   animation: visitor-pulse-mid 2.5s ease-out infinite;
   animation-delay: 0.3s;
+  transform-origin: center;
+  transform-box: fill-box;
+  will-change: transform, opacity;
 }
 
 .visitor-dot-center {
@@ -5266,6 +5348,7 @@ body {
   z-index: 100;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   animation: scrollToTopFadeIn 0.2s ease;
+  will-change: transform, opacity;
 }
 
 @keyframes scrollToTopFadeIn {
@@ -9185,15 +9268,6 @@ body {
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 .dashboard-editor-container {
   display: flex;
   flex: 1;
@@ -10082,15 +10156,6 @@ body {
   animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
 /* AI Image Input Container */
 .ai-image-input-container {
   display: flex;
@@ -10232,15 +10297,6 @@ body {
 
 .dashboard-import-btn .spin {
   animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .dashboard-import-result {
@@ -10639,16 +10695,6 @@ body {
   background: var(--bg-tertiary);
   color: var(--text-tertiary);
   border-color: var(--border-color);
-}
-
-/* Spinning animation for sync icon */
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 .spinning {
@@ -13715,15 +13761,6 @@ body {
 /* Spinning animation */
 .ask-ai-spinner {
   animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }
 
 /* Streaming cursor */
