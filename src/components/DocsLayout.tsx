@@ -54,13 +54,14 @@ export default function DocsLayout({
 
   return (
     <div className={`docs-layout ${!hasRightSidebar ? "no-toc" : ""}`}>
-      {/* Left sidebar - docs navigation */}
+      {/* Main content - placed first in DOM for SEO (H1 loads before sidebar H3) */}
+      {/* CSS position: fixed handles visual positioning of sidebars */}
+      <main className="docs-content">{children}</main>
+
+      {/* Left sidebar - docs navigation (after main content in DOM for SEO) */}
       <aside className="docs-sidebar-left">
         <DocsSidebar currentSlug={currentSlug} />
       </aside>
-
-      {/* Main content */}
-      <main className="docs-content">{children}</main>
 
       {/* Right sidebar - AI chat toggle + table of contents */}
       {hasRightSidebar && (

@@ -4,9 +4,19 @@
 
 ## Current Status
 
-v2.10.2 ready. SEO fixes from GitHub Issue #4 implemented.
+v2.12.0 ready. Canonical URL fix for GitHub Issue #6 implemented.
 
 ## Completed
+
+- [x] Canonical URL mismatch fix (GitHub Issue #6)
+  - [x] Raw HTML was serving homepage canonical instead of page-specific canonical
+  - [x] Added SEARCH_ENGINE_BOTS array to botMeta.ts for search engine crawler detection
+  - [x] Added isSearchEngineBot() helper function
+  - [x] Updated condition to serve pre-rendered HTML to search engine bots
+  - [x] Added documentation header explaining bot detection configuration
+  - [x] Added SEO Bot Configuration section to FORK_CONFIG.md
+  - [x] Added SEO and Bot Detection section to setup-guide.md
+  - [x] Search engines (Google, Bing, DuckDuckGo, etc.) now receive correct canonical URLs
 
 - [x] SEO fixes for GitHub Issue #4 (7 issues)
   - [x] Canonical URL: Dynamic canonical link tags for posts and pages in Post.tsx

@@ -18,7 +18,16 @@ interface ThemeProviderProps {
 }
 
 // Get initial theme from localStorage or use default
+// First checks if theme was already set by inline script in index.html (prevents FOUC)
 const getInitialTheme = (defaultTheme: Theme): Theme => {
+  // First check if theme was already set by inline script
+  if (typeof document !== "undefined") {
+    const htmlTheme = document.documentElement.getAttribute("data-theme") as Theme;
+    if (htmlTheme && ["dark", "light", "tan", "cloud"].includes(htmlTheme)) {
+      return htmlTheme;
+    }
+  }
+
   try {
     const saved = localStorage.getItem("blog-theme") as Theme;
     if (saved && ["dark", "light", "tan", "cloud"].includes(saved)) {

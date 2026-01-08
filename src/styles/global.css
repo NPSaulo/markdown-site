@@ -307,12 +307,13 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+  padding-top: 60px; /* Reserve space for fixed nav to prevent CLS */
 }
 
 /* Mobile and tablet layout padding */
 @media (max-width: 1024px) {
   .layout {
-    padding: 15px;
+    padding: 60px 15px 15px 15px; /* Top padding for nav, sides for mobile */
   }
 }
 
@@ -321,8 +322,7 @@ body {
   max-width: 800px;
   width: 100%;
   margin: 0 auto;
-  margin-top: 60px;
-  /*  padding: 40px 24px; */
+  /* Note: padding-top for nav is handled by .layout */
 }
 
 /* Expand main-content to full width when sidebar layout is used */
@@ -12854,6 +12854,8 @@ body {
 
 /* Three-column docs layout - full width */
 /* Sidebars are position: fixed, so no grid needed */
+/* DOM order: main content first (for SEO - H1 before sidebar H3), then sidebars */
+/* Visual order: left sidebar, main content, right sidebar (handled by position: fixed) */
 .docs-layout {
   width: 100%;
   min-height: calc(100vh - 60px);

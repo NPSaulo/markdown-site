@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [2.12.0] - 2026-01-07
+
+### Fixed
+
+- Canonical URL mismatch between raw and rendered HTML (GitHub Issue #6)
+  - Raw HTML was showing homepage canonical URL instead of page-specific canonical
+  - Added search engine bot detection to serve pre-rendered HTML with correct canonical URLs
+  - Search engines (Google, Bing, DuckDuckGo, etc.) now receive correct canonical tags in initial HTML
+
+### Added
+
+- SEO Bot Configuration section in FORK_CONFIG.md for developers who fork the app
+- SEO and Bot Detection section in setup-guide.md with configuration examples
+- `SEARCH_ENGINE_BOTS` array in `netlify/edge-functions/botMeta.ts` for customizable bot detection
+- `isSearchEngineBot()` helper function for search engine crawler detection
+- Documentation header in botMeta.ts explaining bot detection configuration
+
+### Technical
+
+- Updated `netlify/edge-functions/botMeta.ts`:
+  - Added configuration documentation header explaining three bot categories
+  - Added SEARCH_ENGINE_BOTS array (googlebot, bingbot, yandexbot, duckduckbot, baiduspider, sogou, yahoo! slurp, applebot)
+  - Added isSearchEngineBot() function
+  - Updated condition to serve pre-rendered HTML to both social preview and search engine bots
+
 ## [2.11.0] - 2026-01-06
 
 ### Added

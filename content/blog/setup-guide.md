@@ -1408,6 +1408,50 @@ Your blog includes these API endpoints for search engines and AI:
 | `/openapi.yaml`                | OpenAPI 3.0 specification   |
 | `/llms.txt`                    | AI agent discovery          |
 
+## SEO and Bot Detection
+
+Your site includes intelligent bot detection that serves different responses to different visitors.
+
+### How It Works
+
+The `netlify/edge-functions/botMeta.ts` edge function intercepts requests and serves pre-rendered HTML with correct meta tags to:
+
+- **Social preview bots** (Twitter, Facebook, LinkedIn, Discord): Get Open Graph tags for link previews
+- **Search engine bots** (Google, Bing, DuckDuckGo): Get correct canonical URLs
+
+Regular browsers and AI crawlers receive the normal SPA and let JavaScript update the meta tags.
+
+### Configuration
+
+Edit the bot arrays at the top of `netlify/edge-functions/botMeta.ts` to customize which bots receive pre-rendered HTML:
+
+```typescript
+// Social preview bots - for link previews
+const SOCIAL_PREVIEW_BOTS = ["twitterbot", "facebookexternalhit", ...];
+
+// Search engine bots - for correct canonical URLs
+const SEARCH_ENGINE_BOTS = ["googlebot", "bingbot", ...];
+
+// AI crawlers - get normal SPA (can render JavaScript)
+const AI_CRAWLERS = ["gptbot", "claudebot", ...];
+```
+
+### Testing
+
+Verify bot detection with curl:
+
+```bash
+# Simulate Googlebot
+curl -H "User-Agent: Googlebot" https://yoursite.com/post-slug | grep canonical
+# Expected: correct page canonical
+
+# Normal request
+curl https://yoursite.com/post-slug | grep canonical
+# Expected: homepage canonical (JavaScript will update it)
+```
+
+See `FORK_CONFIG.md` for detailed configuration options.
+
 ## Import External Content
 
 Use Firecrawl to import articles from external URLs as markdown posts:

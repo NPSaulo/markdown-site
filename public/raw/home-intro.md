@@ -2,7 +2,7 @@
 
 ---
 Type: page
-Date: 2026-01-07
+Date: 2026-01-08
 ---
 
 An open-source publishing framework built for AI agents and developers to ship **[docs](/docs)**, or **[blogs](/blog)** or **[websites](/)**.
@@ -29,4 +29,6 @@ agents. -->
 
 **Sync Commands** - Sync discovery commands to update AGENTS.md, CLAUDE.md, and llms.txt
 
-**Semantic search** - Find content by meaning, not just keywords, using vector embeddings.
+**Semantic search** - Find content by meaning, not just keywords.
+
+**Ask AI** - Chat with your site content. Get answers with sources.

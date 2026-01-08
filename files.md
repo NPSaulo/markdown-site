@@ -283,7 +283,7 @@ Frontmatter is the YAML metadata at the top of each markdown file. Here is how i
 
 | File         | Description                                                                                                    |
 | ------------ | -------------------------------------------------------------------------------------------------------------- |
-| `botMeta.ts` | Edge function for social media crawler detection, excludes `/raw/*` paths and AI crawlers from OG interception |
+| `botMeta.ts` | Edge function for bot detection with configurable arrays for social preview bots, search engine bots, and AI crawlers. Serves pre-rendered HTML with correct canonical URLs and OG tags to social and search bots. Excludes `/raw/*` paths and AI crawlers from interception. Configuration documented at top of file. |
 | `rss.ts`     | Proxies `/rss.xml` and `/rss-full.xml` to Convex HTTP                                                          |
 | `sitemap.ts` | Proxies `/sitemap.xml` to Convex HTTP                                                                          |
 | `api.ts`     | Proxies `/api/posts`, `/api/post`, `/api/export` to Convex                                                     |

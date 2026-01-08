@@ -197,7 +197,9 @@ export default function Layout({ children }: LayoutProps) {
               src={siteConfig.logo}
               alt={siteConfig.name}
               className="top-nav-logo"
-              style={{ height: siteConfig.innerPageLogo.size }}
+              width={siteConfig.innerPageLogo.size}
+              height={siteConfig.innerPageLogo.size}
+              style={{ height: siteConfig.innerPageLogo.size, width: "auto" }}
             />
           </Link>
         )}

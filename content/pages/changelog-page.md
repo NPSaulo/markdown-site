@@ -11,6 +11,27 @@ docsSectionOrder: 4
 
 All notable changes to this project.
 
+## v2.12.0
+
+Released January 7, 2026
+
+**Canonical URL fix for search engines (GitHub Issue #6)**
+
+Fixed a mismatch where raw HTML was showing the homepage canonical URL instead of the page-specific canonical URL. Search engines that check raw HTML before rendering JavaScript now receive the correct canonical tags.
+
+**Changes:**
+
+- Added search engine bot detection (Google, Bing, DuckDuckGo, etc.) to serve pre-rendered HTML
+- Search engines now receive correct canonical URLs in the initial HTML response
+- Added SEO Bot Configuration documentation in FORK_CONFIG.md and setup-guide.md
+- Bot detection arrays are easily customizable in `netlify/edge-functions/botMeta.ts`
+
+**For forkers:**
+
+The bot detection configuration is documented with clear comments at the top of `botMeta.ts`. You can customize which bots receive pre-rendered HTML by editing the `SOCIAL_PREVIEW_BOTS`, `SEARCH_ENGINE_BOTS`, and `AI_CRAWLERS` arrays.
+
+---
+
 ## v2.11.0
 
 Released January 6, 2026

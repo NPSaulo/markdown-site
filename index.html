@@ -31,6 +31,23 @@
     <!-- Theme -->
     <meta name="theme-color" content="#faf8f5" />
 
+    <!-- Theme initialization - runs before any rendering to prevent FOUC -->
+    <script>
+      (function() {
+        var theme = 'tan';
+        try {
+          var saved = localStorage.getItem('blog-theme');
+          if (saved && ['dark', 'light', 'tan', 'cloud'].includes(saved)) {
+            theme = saved;
+          }
+        } catch(e) {}
+        document.documentElement.setAttribute('data-theme', theme);
+        var colors = { dark: '#111111', light: '#ffffff', tan: '#faf8f5', cloud: '#f5f5f5' };
+        var meta = document.querySelector('meta[name="theme-color"]');
+        if (meta) meta.setAttribute('content', colors[theme] || colors.tan);
+      })();
+    </script>
+
     <!-- Open Graph -->
     <meta property="og:title" content="markdown sync publishing framework" />
     <meta

@@ -1356,3 +1356,64 @@ Replace example content in:
 | `public/images/logo.svg`       | Site logo                  |
 | `public/images/og-default.svg` | Default social share image |
 | `public/images/logos/*.svg`    | Logo gallery images        |
+
+---
+
+## SEO Bot Configuration
+
+The site serves pre-rendered HTML with correct canonical URLs and meta tags to search engines and social preview bots. Configure bot detection in `netlify/edge-functions/botMeta.ts`.
+
+### How It Works
+
+The edge function detects different types of bots and serves appropriate responses:
+
+| Bot Type            | Response                              | Examples                             |
+| ------------------- | ------------------------------------- | ------------------------------------ |
+| Social preview bots | Pre-rendered HTML with OG tags        | Twitter, Facebook, LinkedIn, Discord |
+| Search engine bots  | Pre-rendered HTML with correct canonical | Google, Bing, DuckDuckGo          |
+| AI crawlers         | Normal SPA (can render JavaScript)    | GPTBot, ClaudeBot, PerplexityBot     |
+| Regular browsers    | Normal SPA                            | Chrome, Firefox, Safari              |
+
+### Customizing Bot Lists
+
+Edit the arrays at the top of `netlify/edge-functions/botMeta.ts`:
+
+```typescript
+// Add or remove social preview bots
+const SOCIAL_PREVIEW_BOTS = [
+  "facebookexternalhit",
+  "twitterbot",
+  // ... add your own
+];
+
+// Add or remove search engine bots
+const SEARCH_ENGINE_BOTS = [
+  "googlebot",
+  "bingbot",
+  // ... add your own
+];
+
+// Add or remove AI crawlers
+const AI_CRAWLERS = [
+  "gptbot",
+  "claudebot",
+  // ... add your own
+];
+```
+
+### Testing Bot Detection
+
+Test with curl to simulate different bots:
+
+```bash
+# Test Googlebot (should get pre-rendered HTML with correct canonical)
+curl -H "User-Agent: Mozilla/5.0 (compatible; Googlebot/2.1)" \
+  https://yoursite.com/your-post | grep canonical
+
+# Test normal browser (should get SPA with homepage canonical)
+curl https://yoursite.com/your-post | grep canonical
+```
+
+### Why This Matters
+
+Single-page apps (SPAs) update meta tags via JavaScript after the page loads. Search engines that check raw HTML before rendering may see incorrect canonical URLs. By serving pre-rendered HTML to search engine bots, we ensure they see the correct canonical URL for each page.
