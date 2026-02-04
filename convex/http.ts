@@ -9,8 +9,8 @@ import { fs } from "./fs";
 const http = httpRouter();
 
 // Site configuration - update these for your site (or run npm run configure)
-const SITE_URL = process.env.SITE_URL || "https://www.markdown.fast";
-const SITE_NAME = "markdown sync framework";
+const SITE_URL = process.env.SITE_URL || "https://npsaulo.com.br";
+const SITE_NAME = "Blog do Saulo";
 
 // RSS feed endpoint (descriptions only)
 http.route({
@@ -103,7 +103,7 @@ http.route({
       site: SITE_NAME,
       url: SITE_URL,
       description:
-        "An open-source publishing framework built for AI agents and developers to ship websites, docs, or blogs. Write markdown, sync from the terminal. Your content is instantly available to browsers, LLMs, and AI agents. Built on Convex and Netlify.",
+        "Um lugar para compartilhar devaneios e coisas afins.",
       posts: posts.map((post: { title: string; slug: string; description: string; date: string; readTime?: string; tags: string[] }) => ({
         title: post.title,
         slug: post.slug,
@@ -226,7 +226,7 @@ http.route({
       site: SITE_NAME,
       url: SITE_URL,
       description:
-        "An open-source publishing framework built for AI agents and developers to ship websites, docs, or blogs. Write markdown, sync from the terminal. Your content is instantly available to browsers, LLMs, and AI agents. Built on Convex and Netlify.",
+        "Um lugar para compartilhar devaneios e coisas afins.",
       exportedAt: new Date().toISOString(),
       totalPosts: fullPosts.length,
       posts: fullPosts,
@@ -262,8 +262,8 @@ function generateMetaHtml(content: {
   image?: string;
   type?: "post" | "page";
 }): string {
-  const siteUrl = process.env.SITE_URL || "https://markdown.fast";
-  const siteName = "markdown sync framework";
+  const siteUrl = process.env.SITE_URL || "https://npsaulo.com.br";
+  const siteName = "Blog do Saulo";
   const defaultImage = `${siteUrl}/images/og-default.svg`;
   const canonicalUrl = `${siteUrl}/${content.slug}`;
 

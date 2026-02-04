@@ -2,7 +2,7 @@
 
 ---
 Type: page
-Date: 2026-01-13
+Date: 2026-02-04
 ---
 
 The open-source markdown publishing framework for developers and AI agents to ship **[docs](/docs)**, or **[blogs](/blog)** or **[websites](/)** that's always in sync.

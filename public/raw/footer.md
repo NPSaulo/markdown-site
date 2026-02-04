@@ -2,7 +2,7 @@
 
 ---
 Type: page
-Date: 2026-01-13
+Date: 2026-02-04
 ---
 
 Built with [Convex](https://convex.dev) for real-time sync and deployed on [Netlify](https://netlify.com). Read the [project on GitHub](https://github.com/waynesutton/markdown-site) to fork and deploy your own. View [real-time site stats](/stats).

@@ -34,12 +34,12 @@ const silent = process.argv.includes("--silent");
 
 // Log helper that respects silent mode
 function log(message: string): void {
-  if (!silent) log(message);
+  if (!silent) console.log(message);
 }
 
 // Warn helper that always shows warnings
 function warn(message: string): void {
-  warn(message);
+  console.warn(message);
 }
 
 // Configuration interface matching fork-config.json

@@ -1,11 +1,11 @@
-# robots.txt for markdown sync framework
+# robots.txt for Blog do Saulo
 # https://www.robotstxt.org/
 
 User-agent: *
 Allow: /
 
 # Sitemaps
-Sitemap: https://www.markdown.fast/sitemap.xml
+Sitemap: https://npsaulo.com.br/sitemap.xml
 
 # AI and LLM crawlers
 User-agent: GPTBot

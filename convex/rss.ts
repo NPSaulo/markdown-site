@@ -2,10 +2,10 @@ import { httpAction } from "./_generated/server";
 import { api } from "./_generated/api";
 
 // Site configuration for RSS feed - update these for your site (or run npm run configure)
-const SITE_URL = process.env.SITE_URL || "https://www.markdown.fast";
-const SITE_TITLE = "markdown sync framework";
+const SITE_URL = process.env.SITE_URL || "https://npsaulo.com.br";
+const SITE_TITLE = "Blog do Saulo";
 const SITE_DESCRIPTION =
-  "An open-source publishing framework built for AI agents and developers to ship websites, docs, or blogs. Write markdown, sync from the terminal. Your content is instantly available to browsers, LLMs, and AI agents. Built on Convex and Netlify.";
+  "Um lugar para compartilhar devaneios e coisas afins.";
 
 // Escape XML special characters
 function escapeXml(text: string): string {

@@ -1,9 +1,9 @@
 import type { Config, Context } from "@netlify/edge-functions";
 
 // MCP Server configuration
-const SITE_URL = "https://www.markdown.fast";
-const SITE_NAME = "markdown sync framework";
-const MCP_SERVER_NAME = "markdown-fast-mcp";
+const SITE_URL = "https://npsaulo.com.br";
+const SITE_NAME = "Blog do Saulo";
+const MCP_SERVER_NAME = "blog-do-saulo-mcp";
 const MCP_SERVER_VERSION = "1.0.0";
 
 // JSON-RPC 2.0 types

@@ -429,12 +429,12 @@ export interface SiteConfig {
 // Customize this for your site
 export const siteConfig: SiteConfig = {
   // Basic site info
-  name: "markdown sync",
-  title: "markdown sync framework",
+  name: "Blog do Saulo",
+  title: "Blog do Saulo",
   // Optional logo/header image (place in public/images/, set to null to hide)
   logo: "/images/logo.svg",
   intro: null, // Set in Home.tsx to allow JSX with links
-  bio: `Your content is instantly available to browsers, LLMs, and AI agents.`,
+  bio: `Your bio text here.`,
 
   // Font family configuration
   // Options: "serif" (New York), "sans" (system fonts), "monospace" (IBM Plex Mono)
@@ -503,7 +503,7 @@ export const siteConfig: SiteConfig = {
   // Set enabled to false to hide, or change username to your GitHub username
   gitHubContributions: {
     enabled: true, // Set to false to hide the contributions graph
-    username: "waynesutton", // Your GitHub username
+    username: "NPSaulo", // Your GitHub username
     showYearNavigation: true, // Show arrows to navigate between years
     linkToProfile: true, // Click graph to open GitHub profile
     title: "GitHub Activity", // Optional title above the graph
@@ -581,7 +581,7 @@ export const siteConfig: SiteConfig = {
   // These links use GitHub raw URLs since AI services can reliably fetch from GitHub
   // Note: Content must be pushed to GitHub for AI links to work
   gitHubRepo: {
-    owner: "waynesutton", // GitHub username or organization
+    owner: "NPSaulo", // GitHub username or organization
     repo: "markdown-site", // Repository name
     branch: "main", // Default branch
     contentPath: "public/raw", // Path to raw markdown files

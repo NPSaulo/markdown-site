@@ -11,7 +11,7 @@ import siteConfig from "../config/siteConfig";
 import { ArrowRight } from "lucide-react";
 
 // Site URL for CopyPageDropdown - update when forking
-const SITE_URL = "https://www.markdown.fast";
+const SITE_URL = "https://npsaulo.com.br";
 
 export default function DocsPage() {
   // Fetch landing page content (checks pages first, then posts)

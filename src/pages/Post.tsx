@@ -22,8 +22,8 @@ import siteConfig from "../config/siteConfig";
 const RELATED_POSTS_VIEW_MODE_KEY = "related-posts-view-mode";
 
 // Site configuration - update these for your site (or run npm run configure)
-const SITE_URL = "https://www.markdown.fast";
-const SITE_NAME = "markdown sync framework";
+const SITE_URL = "https://npsaulo.com.br";
+const SITE_NAME = "Blog do Saulo";
 const DEFAULT_OG_IMAGE = "/images/og-default.svg";
 
 interface PostProps {
