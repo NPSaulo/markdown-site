@@ -1,13 +1,17 @@
 # llms.txt - Information for AI assistants and LLMs
 # Learn more: https://llmstxt.org/
+# Last updated: 2026-02-04T13:02:05.873Z
 
 > Um lugar para compartilhar devaneios e coisas afins.
 
 # Site Information
 - Name: Blog do Saulo
 - URL: https://npsaulo.com.br
-- Description: Um lugar para compartilhar devaneios e coisas afins.
+- Description: Um lugar para compartilhar devaneios e coisas afins. Write markdown, sync from the terminal. Your content is instantly available to browsers, LLMs, and AI agents. Built on Convex and Netlify.
 - Topics: Markdown, Convex, React, TypeScript, Netlify, Open Source, AI, LLM, AEO, GEO
+- Total Posts: 1
+- Latest Post: 2025-01-15
+- GitHub: https://github.com/NPSaulo/markdown-site
 
 # API Endpoints
 
